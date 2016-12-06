@@ -16,6 +16,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
@@ -72,20 +73,36 @@ public class CustomerResource {
         String email = info.getQueryParameters().getFirst("email");
         String address = info.getQueryParameters().getFirst("address");
         String password = info.getQueryParameters().getFirst("password");
+        
+        String sort = UUID.randomUUID().toString();
+        String account = UUID.randomUUID().toString();
+        int balance = 0;
+
+
 
         Connection db = getConnection();
 
         try {
-            String insert = "INSERT INTO customer"
+            String insertCustomer = "INSERT INTO customer"
                     + "(name, email, address, password) VALUES"
                     + "(?,?,?,?)";
 
-            PreparedStatement st = db.prepareStatement(insert);
+            String createAccount = "INSERT INTO account"
+                    + "(sort_code, account_number, current_balance) VALUES"
+                    + "(?,?,?)";
+
+            PreparedStatement st = db.prepareStatement(insertCustomer);
             st.setString(1, name);
             st.setString(2, email);
             st.setString(3, address);
             st.setString(4, password);
             st.executeUpdate();
+            
+            PreparedStatement stm = db.prepareStatement(createAccount);
+            stm.setString(1, sort);
+            stm.setString(2, account);
+            stm.setInt(3, balance);
+            stm.executeUpdate();
 
             String output = "Account has been created.";
             return Response.status(200).entity(output).build();
