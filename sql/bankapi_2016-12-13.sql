@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.7.15)
 # Database: bankapi
-# Generation Time: 2016-11-07 19:01:13 +0000
+# Generation Time: 2016-12-13 17:27:50 +0000
 # ************************************************************
 
 
@@ -28,11 +28,9 @@ DROP TABLE IF EXISTS `account`;
 CREATE TABLE `account` (
   `customer_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `sort_code` varchar(120) DEFAULT NULL,
-  `account_number` int(11) DEFAULT NULL,
+  `account_number` varchar(255) DEFAULT NULL,
   `current_balance` decimal(65,0) DEFAULT NULL,
-  PRIMARY KEY (`customer_id`),
-  CONSTRAINT `account_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `transaction` (`transaction_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `account_ibfk_2` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`customer_id`) ON DELETE CASCADE ON UPDATE CASCADE
+  PRIMARY KEY (`customer_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -48,9 +46,7 @@ CREATE TABLE `customer` (
   `email` varchar(120) DEFAULT NULL,
   `address` varchar(256) DEFAULT NULL,
   `password` varchar(256) DEFAULT NULL,
-  PRIMARY KEY (`customer_id`),
-  CONSTRAINT `customer_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `account` (`customer_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `customer_ibfk_2` FOREIGN KEY (`customer_id`) REFERENCES `transaction` (`customer_id`) ON DELETE CASCADE ON UPDATE CASCADE
+  PRIMARY KEY (`customer_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -68,8 +64,7 @@ CREATE TABLE `transaction` (
   `customer_id` int(11) unsigned NOT NULL,
   PRIMARY KEY (`transaction_id`),
   KEY `customer_id` (`customer_id`),
-  CONSTRAINT `transaction_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `account` (`customer_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `transaction_ibfk_2` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`customer_id`) ON DELETE CASCADE ON UPDATE CASCADE
+  KEY `account_number` (`date`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
