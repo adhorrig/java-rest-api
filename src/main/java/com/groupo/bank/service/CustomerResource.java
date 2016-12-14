@@ -14,6 +14,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -69,10 +70,13 @@ public class CustomerResource {
     @Produces("application/json")
     public Response mix(@Context UriInfo info) throws SQLException, NamingException {
         Gson gson = new Gson();
+        Connection db = getConnection();
+
         String name = info.getQueryParameters().getFirst("name");
         String email = info.getQueryParameters().getFirst("email");
         String address = info.getQueryParameters().getFirst("address");
         String password = info.getQueryParameters().getFirst("password");
+
         String accountType;
         try {
             accountType = info.getQueryParameters().getFirst("account_type");
@@ -90,39 +94,50 @@ public class CustomerResource {
         String account = UUID.randomUUID().toString();
         int balance = 0;
 
-        Connection db = getConnection();
-
         try {
             String insertCustomer = "INSERT INTO customer"
                     + "(name, email, address, password) VALUES"
                     + "(?,?,?,?)";
 
             String createAccount = "INSERT INTO account"
-                    + "(sort_code, account_number, current_balance, account_type) VALUES"
-                    + "(?,?,?,?)";
+                    + "(sort_code, account_number, current_balance, account_type, customer_id) VALUES"
+                    + "(?,?,?,?,?)";
 
             String generateAPI = "INSERT INTO api_keys"
-                    + "(api_key) VALUES"
-                    + "(?)";
+                    + "(api_key, customer_id) VALUES"
+                    + "(?, ?)";
 
-            PreparedStatement st = db.prepareStatement(insertCustomer);
+            PreparedStatement st = db.prepareStatement(insertCustomer, Statement.RETURN_GENERATED_KEYS);
             st.setString(1, name);
             st.setString(2, email);
             st.setString(3, address);
             st.setString(4, password);
             st.executeUpdate();
+            
+            // get the last insert ID
+            
+            int lastInsertId = 0;
+            ResultSet rs = st.getGeneratedKeys();
+            
+            if (rs.next()) {
+                lastInsertId = rs.getInt(1);
+            }
+            
+            
 
             PreparedStatement stm = db.prepareStatement(createAccount);
             stm.setString(1, sort);
             stm.setString(2, account);
             stm.setInt(3, balance);
             stm.setString(4, accountType);
+            stm.setInt(5, lastInsertId);
             stm.executeUpdate();
 
             // generate an API key for the new user.
             String apiKey = UUID.randomUUID().toString();
             PreparedStatement stm3 = db.prepareStatement(generateAPI);
             stm3.setString(1, apiKey);
+            stm3.setInt(2, lastInsertId);
             stm3.executeUpdate();
 
             return Response.status(200).entity(gson.toJson("Account created successfully!")).build();

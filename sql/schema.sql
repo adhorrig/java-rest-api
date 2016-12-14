@@ -5,9 +5,9 @@
 # http://www.sequelpro.com/
 # https://github.com/sequelpro/sequelpro
 #
-# Host: 127.0.0.1 (MySQL 5.7.15)
+# Host: 127.0.0.1 (MySQL 5.7.16)
 # Database: bankapi
-# Generation Time: 2016-12-13 17:27:50 +0000
+# Generation Time: 2016-12-14 16:15:10 +0000
 # ************************************************************
 
 
@@ -23,22 +23,45 @@
 # Dump of table account
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `account`;
-
 CREATE TABLE `account` (
-  `customer_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `sort_code` varchar(120) DEFAULT NULL,
-  `account_number` varchar(255) DEFAULT NULL,
-  `current_balance` decimal(65,0) DEFAULT NULL,
-  PRIMARY KEY (`customer_id`)
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `customer_id` int(11) NOT NULL,
+  `sort_code` varchar(120) NOT NULL DEFAULT '',
+  `account_number` varchar(255) NOT NULL DEFAULT '',
+  `current_balance` decimal(65,0) NOT NULL,
+  `account_type` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `account_type` (`account_type`),
+  CONSTRAINT `account_ibfk_1` FOREIGN KEY (`account_type`) REFERENCES `account_types` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 
-# Dump of table customer
+# Dump of table account_types
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `customer`;
+DROP TABLE IF EXISTS `account_types`;
+
+CREATE TABLE `account_types` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `account_type` varchar(60) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+LOCK TABLES `account_types` WRITE;
+/*!40000 ALTER TABLE `account_types` DISABLE KEYS */;
+
+INSERT INTO `account_types` (`id`, `account_type`)
+VALUES
+	(1,'Current'),
+	(2,'Savings');
+
+/*!40000 ALTER TABLE `account_types` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+# Dump of table customer
+# ------------------------------------------------------------
 
 CREATE TABLE `customer` (
   `customer_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
@@ -51,10 +74,20 @@ CREATE TABLE `customer` (
 
 
 
-# Dump of table transaction
+# Dump of table api_keys
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `transaction`;
+CREATE TABLE `api_keys` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `api_key` text NOT NULL,
+  `customer_id` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+# Dump of table transaction
+# ------------------------------------------------------------
 
 CREATE TABLE `transaction` (
   `transaction_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
