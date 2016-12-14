@@ -7,8 +7,8 @@ package com.groupo.bank.service;
 
 /**
  *
- * @author anthonybloomer
+ * @author anthony
  */
-public class Transfer {
+public class TransferResource {
     
 }

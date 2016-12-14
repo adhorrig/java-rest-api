@@ -78,29 +78,24 @@ public class CustomerResource {
         String email = info.getQueryParameters().getFirst("email");
         String address = info.getQueryParameters().getFirst("address");
         String password = info.getQueryParameters().getFirst("password");
-        
+
         String generatedPassword = null;
-        try {
-            // Create MessageDigest instance for MD5
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            //Add password bytes to digest
-            md.update(password.getBytes());
-            //Get the hash's bytes 
-            byte[] bytes = md.digest();
-            //This bytes[] has bytes in decimal format;
-            //Convert it to hexadecimal format
-            StringBuilder sb = new StringBuilder();
-            for(int i=0; i< bytes.length ;i++)
-            {
-                sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
-            }
-            //Get complete hashed password in hex format
-            generatedPassword = sb.toString();
-        } 
-        catch (NoSuchAlgorithmException e) 
-        {
+
+        // Create MessageDigest instance for MD5
+        MessageDigest md = MessageDigest.getInstance("MD5");
+        //Add password bytes to digest
+        md.update(password.getBytes());
+        //Get the hash's bytes 
+        byte[] bytes = md.digest();
+        //This bytes[] has bytes in decimal format;
+        //Convert it to hexadecimal format
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < bytes.length; i++) {
+            sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
         }
-        System.out.println(generatedPassword);
+        
+        //Get complete hashed password in hex format
+        generatedPassword = sb.toString();
 
         String accountType;
         try {
@@ -115,8 +110,10 @@ public class CustomerResource {
             return Response.status(500).entity(gson.toJson("No account type specified.")).build();
         }
 
-        String sort = UUID.randomUUID().toString();
-        String account = UUID.randomUUID().toString();
+        String sort = UUID.randomUUID().toString().substring(0, 8);
+        String account = UUID.randomUUID().toString().substring(0, 8);
+        
+        
         int balance = 0;
 
         try {
@@ -138,17 +135,14 @@ public class CustomerResource {
             st.setString(3, address);
             st.setString(4, generatedPassword);
             st.executeUpdate();
-            
+
             // get the last insert ID
-            
             int lastInsertId = 0;
             ResultSet rs = st.getGeneratedKeys();
-            
+
             if (rs.next()) {
                 lastInsertId = rs.getInt(1);
             }
-            
-            
 
             PreparedStatement stm = db.prepareStatement(createAccount);
             stm.setString(1, sort);
