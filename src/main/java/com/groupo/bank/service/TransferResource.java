@@ -5,20 +5,13 @@ package com.groupo.bank.service;
  * @author anthony
  */
 import com.google.gson.Gson;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -35,7 +28,6 @@ public class TransferResource {
         DataSource ds = (DataSource) ic.lookup("jdbc/DSTix");
         return ds.getConnection();
     }
-
 
     @POST
     @Path("/create")
@@ -68,13 +60,15 @@ public class TransferResource {
                 st3.setString(1, amount);
                 st3.setString(2, accountNumber);
                 st3.executeUpdate();
+            } else {
+                return Response.status(500).entity(gson.toJson(new APIResponse("500", "Invalid account number."))).build();
             }
 
         } else {
-            return Response.status(500).entity(gson.toJson("No API key specified or invalid API key.")).build();
+            return Response.status(500).entity(gson.toJson(new APIResponse("500", "Invalid API."))).build();
         }
 
-        return Response.status(200).entity(gson.toJson("Transfer successful.")).build();
+        return Response.status(200).entity(gson.toJson(new APIResponse("200", "Transfer successful."))).build();
 
     }
 

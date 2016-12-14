@@ -8,6 +8,7 @@ package com.groupo.bank.service;
 /**
  *
  * @author adamhorrigan
+ * @author anthonybloomer
  */
 import com.google.gson.Gson;
 import java.security.MessageDigest;
@@ -93,7 +94,7 @@ public class CustomerResource {
         for (int i = 0; i < bytes.length; i++) {
             sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
         }
-        
+
         //Get complete hashed password in hex format
         generatedPassword = sb.toString();
 
@@ -107,13 +108,12 @@ public class CustomerResource {
             }
 
         } catch (java.lang.NullPointerException e) {
-            return Response.status(500).entity(gson.toJson("No account type specified.")).build();
+            return Response.status(500).entity(gson.toJson(new APIResponse("500", "No account type specified."))).build();
         }
 
         String sort = UUID.randomUUID().toString().substring(0, 8);
         String account = UUID.randomUUID().toString().substring(0, 8);
-        
-        
+
         int balance = 0;
 
         try {
@@ -159,7 +159,7 @@ public class CustomerResource {
             stm3.setInt(2, lastInsertId);
             stm3.executeUpdate();
 
-            return Response.status(200).entity(gson.toJson("Account created successfully!")).build();
+            return Response.status(200).entity(gson.toJson(new APIResponse("200", "Customer created successfully."))).build();
         } finally {
             db.close();
         }
