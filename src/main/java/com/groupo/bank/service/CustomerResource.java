@@ -73,12 +73,22 @@ public class CustomerResource {
         String email = info.getQueryParameters().getFirst("email");
         String address = info.getQueryParameters().getFirst("address");
         String password = info.getQueryParameters().getFirst("password");
-        
+        String accountType;
+        try {
+            accountType = info.getQueryParameters().getFirst("account_type");
+            if (accountType.equalsIgnoreCase("Current")) {
+                accountType = "1";
+            } else {
+                accountType = "2";
+            }
+
+        } catch (java.lang.NullPointerException e) {
+            return Response.status(500).entity(gson.toJson("No account type specified.")).build();
+        }
+
         String sort = UUID.randomUUID().toString();
         String account = UUID.randomUUID().toString();
         int balance = 0;
-
-
 
         Connection db = getConnection();
 
@@ -88,9 +98,9 @@ public class CustomerResource {
                     + "(?,?,?,?)";
 
             String createAccount = "INSERT INTO account"
-                    + "(sort_code, account_number, current_balance) VALUES"
-                    + "(?,?,?)";
-            
+                    + "(sort_code, account_number, current_balance, account_type) VALUES"
+                    + "(?,?,?,?)";
+
             String generateAPI = "INSERT INTO api_keys"
                     + "(api_key) VALUES"
                     + "(?)";
@@ -101,19 +111,19 @@ public class CustomerResource {
             st.setString(3, address);
             st.setString(4, password);
             st.executeUpdate();
-            
+
             PreparedStatement stm = db.prepareStatement(createAccount);
             stm.setString(1, sort);
             stm.setString(2, account);
             stm.setInt(3, balance);
+            stm.setString(4, accountType);
             stm.executeUpdate();
-            
+
             // generate an API key for the new user.
             String apiKey = UUID.randomUUID().toString();
             PreparedStatement stm3 = db.prepareStatement(generateAPI);
             stm3.setString(1, apiKey);
             stm3.executeUpdate();
-            
 
             return Response.status(200).entity(gson.toJson("Account created successfully!")).build();
         } finally {
