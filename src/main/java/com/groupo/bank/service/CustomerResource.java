@@ -10,6 +10,8 @@ package com.groupo.bank.service;
  * @author adamhorrigan
  */
 import com.google.gson.Gson;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -68,7 +70,7 @@ public class CustomerResource {
     @POST
     @Path("/create")
     @Produces("application/json")
-    public Response mix(@Context UriInfo info) throws SQLException, NamingException {
+    public Response mix(@Context UriInfo info) throws SQLException, NamingException, NoSuchAlgorithmException {
         Gson gson = new Gson();
         Connection db = getConnection();
 
@@ -76,6 +78,29 @@ public class CustomerResource {
         String email = info.getQueryParameters().getFirst("email");
         String address = info.getQueryParameters().getFirst("address");
         String password = info.getQueryParameters().getFirst("password");
+        
+        String generatedPassword = null;
+        try {
+            // Create MessageDigest instance for MD5
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            //Add password bytes to digest
+            md.update(password.getBytes());
+            //Get the hash's bytes 
+            byte[] bytes = md.digest();
+            //This bytes[] has bytes in decimal format;
+            //Convert it to hexadecimal format
+            StringBuilder sb = new StringBuilder();
+            for(int i=0; i< bytes.length ;i++)
+            {
+                sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
+            }
+            //Get complete hashed password in hex format
+            generatedPassword = sb.toString();
+        } 
+        catch (NoSuchAlgorithmException e) 
+        {
+        }
+        System.out.println(generatedPassword);
 
         String accountType;
         try {
@@ -111,7 +136,7 @@ public class CustomerResource {
             st.setString(1, name);
             st.setString(2, email);
             st.setString(3, address);
-            st.setString(4, password);
+            st.setString(4, generatedPassword);
             st.executeUpdate();
             
             // get the last insert ID
