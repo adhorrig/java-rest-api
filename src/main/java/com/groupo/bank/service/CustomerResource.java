@@ -11,6 +11,7 @@ package com.groupo.bank.service;
  * @author anthonybloomer
  */
 import com.google.gson.Gson;
+import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
@@ -71,14 +72,16 @@ public class CustomerResource {
     @POST
     @Path("/create")
     @Produces("application/json")
-    public Response mix(@Context UriInfo info) throws SQLException, NamingException, NoSuchAlgorithmException {
+    public Response mix(@Context UriInfo info) throws SQLException, NamingException, NoSuchAlgorithmException, UnsupportedEncodingException {
         Gson gson = new Gson();
         Connection db = getConnection();
 
-        String name = info.getQueryParameters().getFirst("name");
-        String email = info.getQueryParameters().getFirst("email");
-        String address = info.getQueryParameters().getFirst("address");
-        String password = info.getQueryParameters().getFirst("password");
+        String name = java.net.URLDecoder.decode(info.getQueryParameters().getFirst("name"), "UTF-8");
+        String email = java.net.URLDecoder.decode(info.getQueryParameters().getFirst("email"), "UTF-8");
+        String address = java.net.URLDecoder.decode(info.getQueryParameters().getFirst("address"), "UTF-8");
+        String password = java.net.URLDecoder.decode(info.getQueryParameters().getFirst("password"), "UTF-8");
+        
+        System.out.println(name);
 
         String generatedPassword = null;
 
