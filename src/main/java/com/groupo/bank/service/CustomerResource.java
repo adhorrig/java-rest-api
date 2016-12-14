@@ -90,6 +90,10 @@ public class CustomerResource {
             String createAccount = "INSERT INTO account"
                     + "(sort_code, account_number, current_balance) VALUES"
                     + "(?,?,?)";
+            
+            String generateAPI = "INSERT INTO api_keys"
+                    + "(api_key) VALUES"
+                    + "(?)";
 
             PreparedStatement st = db.prepareStatement(insertCustomer);
             st.setString(1, name);
@@ -104,6 +108,11 @@ public class CustomerResource {
             stm.setInt(3, balance);
             stm.executeUpdate();
             
+            // generate an API key for the new user.
+            String apiKey = UUID.randomUUID().toString();
+            PreparedStatement stm3 = db.prepareStatement(generateAPI);
+            stm3.setString(1, apiKey);
+            stm3.executeUpdate();
             
 
             return Response.status(200).entity(gson.toJson("Account created successfully!")).build();
