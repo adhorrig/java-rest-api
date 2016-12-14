@@ -103,9 +103,10 @@ public class CustomerResource {
             stm.setString(2, account);
             stm.setInt(3, balance);
             stm.executeUpdate();
+            
+            
 
-            String output = "Account has been created.";
-            return Response.status(200).entity(output).build();
+            return Response.status(200).entity(gson.toJson("Account created successfully!")).build();
         } finally {
             db.close();
         }
