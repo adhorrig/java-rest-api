@@ -8,10 +8,7 @@ import com.google.gson.Gson;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
@@ -62,11 +59,11 @@ public class BalanceResource {
 
 
             } else {
-                return Response.status(500).entity(gson.toJson(new APIResponse("500", "Invalid account number."))).build();
+                return Response.status(500).entity(gson.toJson(new APIResponse("404", "Invalid account number."))).build();
             }
 
         } else {
-            return Response.status(500).entity(gson.toJson(new APIResponse("500", "Invalid API."))).build();
+            return Response.status(500).entity(gson.toJson(new APIResponse("404", "Invalid API."))).build();
         }
 
     }

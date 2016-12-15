@@ -23,10 +23,53 @@ import javax.ws.rs.core.UriInfo;
 @Produces("application/json")
 public class TransferResource {
 
+    Connection conn;
+
+    public TransferResource() throws SQLException, NamingException {
+        conn = this.getConnection();
+    }
+
     protected Connection getConnection() throws SQLException, NamingException {
         InitialContext ic = new InitialContext();
         DataSource ds = (DataSource) ic.lookup("jdbc/DSTix");
         return ds.getConnection();
+    }
+
+    private boolean isValidAPI(String api) throws SQLException, NamingException {
+
+        String verifyAPI = "SELECT * FROM api_keys WHERE api_key = ?";
+        PreparedStatement st = conn.prepareStatement(verifyAPI);
+        st.setString(1, api);
+        ResultSet rs = st.executeQuery();
+        return rs.next();
+    }
+
+    private boolean isValidAccountNumber(String accountNumber) throws SQLException, NamingException {
+        String verifyAccount = "SELECT * FROM account WHERE account_number = ?";
+        PreparedStatement st;
+        st = conn.prepareStatement(verifyAccount);
+        st.setString(1, accountNumber);
+        ResultSet rs2 = st.executeQuery();
+        return rs2.next();
+
+    }
+
+    private boolean hasSufficentFunds(String accountNumber, double amount) throws SQLException, NamingException {
+        String verifyAccount = "SELECT account_number, current_balance FROM account WHERE account_number = ?";
+        PreparedStatement st2 = conn.prepareStatement(verifyAccount);
+        st2.setString(1, accountNumber);
+        ResultSet rs2 = st2.executeQuery();
+
+        if (rs2.next()) {
+
+            double balance = Double.parseDouble(rs2.getString("current_balance"));
+
+            if (balance >= amount) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     @POST
@@ -36,39 +79,34 @@ public class TransferResource {
 
         Gson gson = new Gson();
 
-        Connection db = getConnection();
-
         String apiKey = info.getQueryParameters().getFirst("api_key");
-        String accountNumber = info.getQueryParameters().getFirst("account_number");
-        String amount = info.getQueryParameters().getFirst("amount");
+        String from = info.getQueryParameters().getFirst("from");
+        String to = info.getQueryParameters().getFirst("to");
+        double amount = Double.parseDouble(info.getQueryParameters().getFirst("amount"));
 
-        String verifyAPI = "SELECT * FROM api_keys WHERE api_key = ?";
-        PreparedStatement st = db.prepareStatement(verifyAPI);
-        st.setString(1, apiKey);
-        ResultSet rs = st.executeQuery();
-        if (rs.next()) {
+        if (isValidAPI(apiKey) && isValidAccountNumber(from) && isValidAccountNumber(to)) {
 
-            String verifyAccount = "SELECT * FROM account WHERE account_number = ?";
-            PreparedStatement st2 = db.prepareStatement(verifyAccount);
-            st2.setString(1, accountNumber);
-            ResultSet rs2 = st.executeQuery();
-
-            if (rs2.next()) {
-
+            if (this.hasSufficentFunds(from, amount)) {
                 String updateBalance = "UPDATE account SET current_balance = current_balance + ? WHERE account_number = ?";
-                PreparedStatement st3 = db.prepareStatement(updateBalance);
-                st3.setString(1, amount);
-                st3.setString(2, accountNumber);
+                PreparedStatement st3 = conn.prepareStatement(updateBalance);
+                st3.setDouble(1, amount);
+                st3.setString(2, to);
                 st3.executeUpdate();
-            } else {
-                return Response.status(500).entity(gson.toJson(new APIResponse("500", "Invalid account number."))).build();
+                
+                String updateSenderBalance = "UPDATE account SET current_balance = current_balance - ? WHERE account_number = ?";
+                PreparedStatement st4 = conn.prepareStatement(updateSenderBalance);
+                st4.setDouble(1, amount);
+                st4.setString(2, from);
+                st4.executeUpdate();
+                
+                return Response.status(200).entity(gson.toJson(new APIResponse("200", "Transfer successful."))).build();
             }
 
         } else {
             return Response.status(500).entity(gson.toJson(new APIResponse("500", "Invalid API."))).build();
         }
 
-        return Response.status(200).entity(gson.toJson(new APIResponse("200", "Transfer successful."))).build();
+        return null;
 
     }
 
