@@ -5,9 +5,9 @@
 # http://www.sequelpro.com/
 # https://github.com/sequelpro/sequelpro
 #
-# Host: 127.0.0.1 (MySQL 5.7.15)
+# Host: 127.0.0.1 (MySQL 5.7.16)
 # Database: bankapi
-# Generation Time: 2016-11-07 19:01:13 +0000
+# Generation Time: 2016-12-14 16:15:10 +0000
 # ************************************************************
 
 
@@ -23,24 +23,45 @@
 # Dump of table account
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `account`;
-
 CREATE TABLE `account` (
-  `customer_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `sort_code` varchar(120) DEFAULT NULL,
-  `account_number` int(11) DEFAULT NULL,
-  `current_balance` decimal(65,0) DEFAULT NULL,
-  PRIMARY KEY (`customer_id`),
-  CONSTRAINT `account_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `transaction` (`transaction_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `account_ibfk_2` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`customer_id`) ON DELETE CASCADE ON UPDATE CASCADE
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `customer_id` int(11) NOT NULL,
+  `sort_code` varchar(120) NOT NULL DEFAULT '',
+  `account_number` varchar(255) NOT NULL DEFAULT '',
+  `current_balance` decimal(65,0) NOT NULL,
+  `account_type` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `account_type` (`account_type`),
+  CONSTRAINT `account_ibfk_1` FOREIGN KEY (`account_type`) REFERENCES `account_types` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 
-# Dump of table customer
+# Dump of table account_types
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `customer`;
+DROP TABLE IF EXISTS `account_types`;
+
+CREATE TABLE `account_types` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `account_type` varchar(60) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+LOCK TABLES `account_types` WRITE;
+/*!40000 ALTER TABLE `account_types` DISABLE KEYS */;
+
+INSERT INTO `account_types` (`id`, `account_type`)
+VALUES
+	(1,'Current'),
+	(2,'Savings');
+
+/*!40000 ALTER TABLE `account_types` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+# Dump of table customer
+# ------------------------------------------------------------
 
 CREATE TABLE `customer` (
   `customer_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
@@ -48,17 +69,25 @@ CREATE TABLE `customer` (
   `email` varchar(120) DEFAULT NULL,
   `address` varchar(256) DEFAULT NULL,
   `password` varchar(256) DEFAULT NULL,
-  PRIMARY KEY (`customer_id`),
-  CONSTRAINT `customer_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `account` (`customer_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `customer_ibfk_2` FOREIGN KEY (`customer_id`) REFERENCES `transaction` (`customer_id`) ON DELETE CASCADE ON UPDATE CASCADE
+  PRIMARY KEY (`customer_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+# Dump of table api_keys
+# ------------------------------------------------------------
+
+CREATE TABLE `api_keys` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `api_key` text NOT NULL,
+  `customer_id` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 
 # Dump of table transaction
 # ------------------------------------------------------------
-
-DROP TABLE IF EXISTS `transaction`;
 
 CREATE TABLE `transaction` (
   `transaction_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
@@ -68,8 +97,7 @@ CREATE TABLE `transaction` (
   `customer_id` int(11) unsigned NOT NULL,
   PRIMARY KEY (`transaction_id`),
   KEY `customer_id` (`customer_id`),
-  CONSTRAINT `transaction_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `account` (`customer_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `transaction_ibfk_2` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`customer_id`) ON DELETE CASCADE ON UPDATE CASCADE
+  KEY `account_number` (`date`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 

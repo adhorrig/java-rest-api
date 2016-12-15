@@ -1,14 +1,17 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.groupo.bank.service;
 
 /**
  *
- * @author anthonybloomer
+ * @author anthony
  */
 public class Balance {
+    
+    String account;
+    String balance;
+
+    public Balance(String account, String balance) {
+        this.account = account;
+        this.balance = balance;
+    }
     
 }
