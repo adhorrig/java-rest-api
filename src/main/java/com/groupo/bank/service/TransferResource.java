@@ -100,13 +100,14 @@ public class TransferResource {
                 st4.executeUpdate();
                 
                 return Response.status(200).entity(gson.toJson(new APIResponse("200", "Transfer successful."))).build();
+            } else {
+                return Response.status(500).entity(gson.toJson(new APIResponse("500", "The sender has insufficient funds to make this transfer."))).build();
             }
 
         } else {
             return Response.status(500).entity(gson.toJson(new APIResponse("500", "Invalid API."))).build();
         }
 
-        return null;
 
     }
 
