@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.groupo.bank.service;
 
 /**
@@ -37,6 +32,12 @@ import javax.ws.rs.core.UriInfo;
 @Produces("application/json")
 public class CustomerResource {
 
+    Connection conn;
+
+    public CustomerResource() throws SQLException, NamingException {
+        conn = this.getConnection();
+    }
+
     protected Connection getConnection() throws SQLException, NamingException {
         InitialContext ic = new InitialContext();
         DataSource ds = (DataSource) ic.lookup("jdbc/DSTix");
@@ -52,21 +53,33 @@ public class CustomerResource {
     }
 
     @GET
-    public List getList() throws SQLException, NamingException {
-        List events = new ArrayList<>();
-        Connection db = getConnection();
+    @Path("/")
+    @Produces("application/json")
+    public Response getList(@Context UriInfo info) throws SQLException, NamingException {
+        Gson gson = new Gson();
+        Validator v = new Validator();
 
-        try {
-            PreparedStatement st = db.prepareStatement("SELECT customer_id, email, name from customer");
-            ResultSet rs = st.executeQuery();
-            while (rs.next()) {
-                Customer e = getFromResultSet(rs);
-                events.add(e);
+        String apiKey = info.getQueryParameters().getFirst("api_key");
+
+        if (v.isValidAPI(apiKey)) {
+            List events = new ArrayList<>();
+            Connection db = getConnection();
+
+            try {
+                PreparedStatement st = db.prepareStatement("SELECT customer_id, email, name from customer");
+                ResultSet rs = st.executeQuery();
+                while (rs.next()) {
+                    Customer e = getFromResultSet(rs);
+                    events.add(e);
+                }
+                return Response.status(200).entity(gson.toJson(events)).build();
+            } finally {
+                db.close();
             }
-            return events;
-        } finally {
-            db.close();
+        } else {
+            return Response.status(200).entity(gson.toJson(new APIResponse("200", "Invalid API key"))).build();
         }
+
     }
 
     @POST
@@ -80,7 +93,7 @@ public class CustomerResource {
         String email = java.net.URLDecoder.decode(info.getQueryParameters().getFirst("email"), "UTF-8");
         String address = java.net.URLDecoder.decode(info.getQueryParameters().getFirst("address"), "UTF-8");
         String password = java.net.URLDecoder.decode(info.getQueryParameters().getFirst("password"), "UTF-8");
-        
+
         System.out.println(name);
 
         String generatedPassword = null;
@@ -111,7 +124,7 @@ public class CustomerResource {
             }
 
         } catch (java.lang.NullPointerException e) {
-            return Response.status(500).entity(gson.toJson(new APIResponse("500", "No account type specified."))).build();
+            return Response.status(500).entity(gson.toJson(new APIResponse("200", "No account type specified."))).build();
         }
 
         String sort = UUID.randomUUID().toString().substring(0, 8);
