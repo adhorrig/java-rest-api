@@ -59,11 +59,11 @@ public class BalanceResource {
 
 
             } else {
-                return Response.status(500).entity(gson.toJson(new APIResponse("404", "Invalid account number."))).build();
+                return Response.status(200).entity(gson.toJson(new APIResponse("200", "Invalid account number."))).build();
             }
 
         } else {
-            return Response.status(500).entity(gson.toJson(new APIResponse("404", "Invalid API."))).build();
+            return Response.status(200).entity(gson.toJson(new APIResponse("200", "Invalid API."))).build();
         }
 
     }

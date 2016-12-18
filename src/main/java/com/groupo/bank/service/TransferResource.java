@@ -64,11 +64,11 @@ public class TransferResource {
                 
                 return Response.status(200).entity(gson.toJson(new APIResponse("200", "Transfer successful."))).build();
             } else {
-                return Response.status(500).entity(gson.toJson(new APIResponse("500", "The sender has insufficient funds to make this transfer."))).build();
+                return Response.status(200).entity(gson.toJson(new APIResponse("200", "The sender has insufficient funds to make this transfer."))).build();
             }
 
         } else {
-            return Response.status(500).entity(gson.toJson(new APIResponse("500", "Invalid API."))).build();
+            return Response.status(200).entity(gson.toJson(new APIResponse("200", "Invalid API."))).build();
         }
 
 
