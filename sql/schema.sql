@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.7.16)
 # Database: bankapi
-# Generation Time: 2016-12-15 18:20:01 +0000
+# Generation Time: 2016-12-18 21:18:12 +0000
 # ************************************************************
 
 
@@ -27,16 +27,14 @@ DROP TABLE IF EXISTS `account`;
 
 CREATE TABLE `account` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `customer_id` int(11) unsigned NOT NULL,
+  `customer_id` int(11) NOT NULL,
   `sort_code` varchar(120) NOT NULL DEFAULT '',
   `account_number` varchar(255) NOT NULL DEFAULT '',
-  `current_balance` decimal(14,2) NOT NULL,
+  `current_balance` decimal(15,4) NOT NULL,
   `account_type` int(11) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   KEY `account_type` (`account_type`),
-  KEY `customer_id` (`customer_id`),
-  CONSTRAINT `account_ibfk_1` FOREIGN KEY (`account_type`) REFERENCES `account_types` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `account_ibfk_2` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`customer_id`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `account_ibfk_1` FOREIGN KEY (`account_type`) REFERENCES `account_types` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -73,9 +71,7 @@ CREATE TABLE `api_keys` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `api_key` text NOT NULL,
   `customer_id` int(11) unsigned NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `customer_id` (`customer_id`),
-  CONSTRAINT `api_keys_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`customer_id`) ON DELETE CASCADE ON UPDATE CASCADE
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -103,14 +99,13 @@ DROP TABLE IF EXISTS `transaction`;
 
 CREATE TABLE `transaction` (
   `transaction_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `date` date DEFAULT NULL,
-  `description` varchar(255) DEFAULT NULL,
-  `post_balance` decimal(65,0) DEFAULT NULL,
+  `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `description` varchar(255) NOT NULL DEFAULT '',
+  `post_balance` decimal(65,0) NOT NULL,
   `customer_id` int(11) unsigned NOT NULL,
   PRIMARY KEY (`transaction_id`),
   KEY `customer_id` (`customer_id`),
-  KEY `account_number` (`date`),
-  CONSTRAINT `transaction_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`customer_id`) ON DELETE CASCADE ON UPDATE CASCADE
+  KEY `account_number` (`date`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
