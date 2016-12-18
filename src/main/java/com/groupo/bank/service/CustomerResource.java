@@ -23,6 +23,7 @@ import javax.sql.DataSource;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
@@ -50,6 +51,36 @@ public class CustomerResource {
         customer.setEmail(rs.getString("email"));
         customer.setName(rs.getString("name"));
         return customer;
+    }
+
+    @GET
+    @Path("/{id}")
+    @Produces("application/json")
+    public Response getCustomerById(@PathParam("id") int id, @Context UriInfo info) throws SQLException, NamingException {
+
+        Gson gson = new Gson();
+        Validator v = new Validator();
+
+        String apiKey = info.getQueryParameters().getFirst("api_key");
+
+        if (v.isValidAPI(apiKey)) {
+            String verifyAPI = "SELECT * FROM customer WHERE customer_id = ?";
+            PreparedStatement st = this.conn.prepareStatement(verifyAPI);
+            st.setInt(1, id);
+            ResultSet rs = st.executeQuery();
+            List events = new ArrayList<>();
+            if (rs.next()) {
+                Customer e = getFromResultSet(rs);
+                events.add(e);
+
+            }
+
+            return Response.status(200).entity(gson.toJson(events)).build();
+
+        }
+
+        return null;
+
     }
 
     @GET
