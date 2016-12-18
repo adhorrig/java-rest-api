@@ -7,7 +7,6 @@ package com.groupo.bank.service;
 import com.google.gson.Gson;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -35,43 +34,7 @@ public class TransferResource {
         return ds.getConnection();
     }
 
-    private boolean isValidAPI(String api) throws SQLException, NamingException {
-
-        String verifyAPI = "SELECT * FROM api_keys WHERE api_key = ?";
-        PreparedStatement st = conn.prepareStatement(verifyAPI);
-        st.setString(1, api);
-        ResultSet rs = st.executeQuery();
-        return rs.next();
-    }
-
-    private boolean isValidAccountNumber(String accountNumber) throws SQLException, NamingException {
-        String verifyAccount = "SELECT * FROM account WHERE account_number = ?";
-        PreparedStatement st;
-        st = conn.prepareStatement(verifyAccount);
-        st.setString(1, accountNumber);
-        ResultSet rs2 = st.executeQuery();
-        return rs2.next();
-
-    }
-
-    private boolean hasSufficentFunds(String accountNumber, double amount) throws SQLException, NamingException {
-        String verifyAccount = "SELECT account_number, current_balance FROM account WHERE account_number = ?";
-        PreparedStatement st2 = conn.prepareStatement(verifyAccount);
-        st2.setString(1, accountNumber);
-        ResultSet rs2 = st2.executeQuery();
-
-        if (rs2.next()) {
-
-            double balance = Double.parseDouble(rs2.getString("current_balance"));
-
-            if (balance >= amount) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
+    
     @POST
     @Path("/create")
     @Produces("application/json")
@@ -83,10 +46,10 @@ public class TransferResource {
         String from = info.getQueryParameters().getFirst("from");
         String to = info.getQueryParameters().getFirst("to");
         double amount = Double.parseDouble(info.getQueryParameters().getFirst("amount"));
+        Validator v = new Validator();
+        if (v.isValidAPI(apiKey) && v.isValidAccountNumber(from) && v.isValidAccountNumber(to)) {
 
-        if (isValidAPI(apiKey) && isValidAccountNumber(from) && isValidAccountNumber(to)) {
-
-            if (this.hasSufficentFunds(from, amount)) {
+            if (v.hasSufficentFunds(from, amount)) {
                 String updateBalance = "UPDATE account SET current_balance = current_balance + ? WHERE account_number = ?";
                 PreparedStatement st3 = conn.prepareStatement(updateBalance);
                 st3.setDouble(1, amount);
