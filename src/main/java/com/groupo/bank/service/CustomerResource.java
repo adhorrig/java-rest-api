@@ -155,7 +155,7 @@ public class CustomerResource {
             }
 
         } catch (java.lang.NullPointerException e) {
-            return Response.status(500).entity(gson.toJson(new APIResponse("200", "No account type specified."))).build();
+            return Response.status(200).entity(gson.toJson(new APIResponse("200", "No account type specified."))).build();
         }
 
         String sort = UUID.randomUUID().toString().substring(0, 8);
