@@ -2,6 +2,10 @@
     width: 800px;
 }
 
-.message-block{
+.withdrawl-message-block{
+    display: none;
+}
+
+.customer-message-block{
     display: none;
 }

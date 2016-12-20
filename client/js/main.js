@@ -31,7 +31,7 @@ $("#withdrawl").click(function (e) {
         dataType: 'text',
         type: 'POST',
         success: function (data) {
-            $('.message-block').show("slide");
+            $('.withdrawl-message-block').show("slide");
         },
         error: function (xhr, status, error) {
             console.log(xhr);
@@ -70,7 +70,7 @@ $("#add-customer").click(function (e) {
         dataType: 'text',
         type: 'POST',
         success: function (data) {
-            console.log(data);
+            $('.customer-message-block').show("slide");
         },
         error: function (xhr, status, error) {
             console.log(xhr);
