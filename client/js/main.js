@@ -10,6 +10,40 @@ var placesAutocomplete = places({
     container: document.querySelector('#address-input')
 });
 
+$("#get-balance").click(function (e) {
+    var account = $('#account').val();
+
+    var params = {
+        account_number: account,
+        api_key: key
+    };
+
+    params = jQuery.param(params);
+    console.log(params);
+
+    url = api + '/api/balance?' + params;
+    console.log(url);
+
+    $.ajax({
+        url: url,
+        dataType: 'text',
+        type: 'GET',
+        success: function (data) {
+            console.log(data);
+            $('.balance-message-block').show("slide");
+            console.log(data[0]['balance']);
+            $('.amount').text(data);
+
+        },
+        error: function (xhr, status, error) {
+            console.log(xhr);
+            console.log(status);
+            console.log(error);
+        }
+    });
+});
+
+
 $("#withdrawl").click(function (e) {
     var account = $('#account_number').val();
     var amount = $('#amount').val();
