@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.7.16)
 # Database: bankapi
-# Generation Time: 2016-12-14 16:15:10 +0000
+# Generation Time: 2016-12-18 21:18:12 +0000
 # ************************************************************
 
 
@@ -23,12 +23,14 @@
 # Dump of table account
 # ------------------------------------------------------------
 
+DROP TABLE IF EXISTS `account`;
+
 CREATE TABLE `account` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `customer_id` int(11) NOT NULL,
   `sort_code` varchar(120) NOT NULL DEFAULT '',
   `account_number` varchar(255) NOT NULL DEFAULT '',
-  `current_balance` decimal(65,0) NOT NULL,
+  `current_balance` decimal(15,4) NOT NULL,
   `account_type` int(11) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   KEY `account_type` (`account_type`),
@@ -60,8 +62,24 @@ VALUES
 UNLOCK TABLES;
 
 
+# Dump of table api_keys
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `api_keys`;
+
+CREATE TABLE `api_keys` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `api_key` text NOT NULL,
+  `customer_id` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
 # Dump of table customer
 # ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `customer`;
 
 CREATE TABLE `customer` (
   `customer_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
@@ -74,26 +92,16 @@ CREATE TABLE `customer` (
 
 
 
-# Dump of table api_keys
-# ------------------------------------------------------------
-
-CREATE TABLE `api_keys` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `api_key` text NOT NULL,
-  `customer_id` int(11) unsigned NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-
-
 # Dump of table transaction
 # ------------------------------------------------------------
 
+DROP TABLE IF EXISTS `transaction`;
+
 CREATE TABLE `transaction` (
   `transaction_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `date` date DEFAULT NULL,
-  `description` varchar(255) DEFAULT NULL,
-  `post_balance` decimal(65,0) DEFAULT NULL,
+  `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `description` varchar(255) NOT NULL DEFAULT '',
+  `post_balance` decimal(65,0) NOT NULL,
   `customer_id` int(11) unsigned NOT NULL,
   PRIMARY KEY (`transaction_id`),
   KEY `customer_id` (`customer_id`),

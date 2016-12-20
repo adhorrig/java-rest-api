@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.groupo.bank.service;
 
 /**
@@ -28,6 +23,7 @@ import javax.sql.DataSource;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
@@ -36,6 +32,12 @@ import javax.ws.rs.core.UriInfo;
 @Path("/customer")
 @Produces("application/json")
 public class CustomerResource {
+
+    Connection conn;
+
+    public CustomerResource() throws SQLException, NamingException {
+        conn = this.getConnection();
+    }
 
     protected Connection getConnection() throws SQLException, NamingException {
         InitialContext ic = new InitialContext();
@@ -52,21 +54,63 @@ public class CustomerResource {
     }
 
     @GET
-    public List getList() throws SQLException, NamingException {
-        List events = new ArrayList<>();
-        Connection db = getConnection();
+    @Path("/{id}")
+    @Produces("application/json")
+    public Response getCustomerById(@PathParam("id") int id, @Context UriInfo info) throws SQLException, NamingException {
 
-        try {
-            PreparedStatement st = db.prepareStatement("SELECT customer_id, email, name from customer");
+        Gson gson = new Gson();
+        Validator v = new Validator();
+
+        String apiKey = info.getQueryParameters().getFirst("api_key");
+
+        if (v.isValidAPI(apiKey)) {
+            String verifyAPI = "SELECT * FROM customer WHERE customer_id = ?";
+            PreparedStatement st = this.conn.prepareStatement(verifyAPI);
+            st.setInt(1, id);
             ResultSet rs = st.executeQuery();
-            while (rs.next()) {
+            List events = new ArrayList<>();
+            if (rs.next()) {
                 Customer e = getFromResultSet(rs);
                 events.add(e);
+
             }
-            return events;
-        } finally {
-            db.close();
+
+            return Response.status(200).entity(gson.toJson(events)).build();
+
         }
+
+        return null;
+
+    }
+
+    @GET
+    @Path("/")
+    @Produces("application/json")
+    public Response getList(@Context UriInfo info) throws SQLException, NamingException {
+        Gson gson = new Gson();
+        Validator v = new Validator();
+
+        String apiKey = info.getQueryParameters().getFirst("api_key");
+
+        if (v.isValidAPI(apiKey)) {
+            List events = new ArrayList<>();
+            Connection db = getConnection();
+
+            try {
+                PreparedStatement st = db.prepareStatement("SELECT customer_id, email, name from customer");
+                ResultSet rs = st.executeQuery();
+                while (rs.next()) {
+                    Customer e = getFromResultSet(rs);
+                    events.add(e);
+                }
+                return Response.status(200).entity(gson.toJson(events)).build();
+            } finally {
+                db.close();
+            }
+        } else {
+            return Response.status(200).entity(gson.toJson(new APIResponse("200", "Invalid API key"))).build();
+        }
+
     }
 
     @POST
@@ -80,7 +124,7 @@ public class CustomerResource {
         String email = java.net.URLDecoder.decode(info.getQueryParameters().getFirst("email"), "UTF-8");
         String address = java.net.URLDecoder.decode(info.getQueryParameters().getFirst("address"), "UTF-8");
         String password = java.net.URLDecoder.decode(info.getQueryParameters().getFirst("password"), "UTF-8");
-        
+
         System.out.println(name);
 
         String generatedPassword = null;
@@ -111,7 +155,7 @@ public class CustomerResource {
             }
 
         } catch (java.lang.NullPointerException e) {
-            return Response.status(500).entity(gson.toJson(new APIResponse("500", "No account type specified."))).build();
+            return Response.status(200).entity(gson.toJson(new APIResponse("200", "No account type specified."))).build();
         }
 
         String sort = UUID.randomUUID().toString().substring(0, 8);

@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
@@ -35,41 +36,15 @@ public class TransferResource {
         return ds.getConnection();
     }
 
-    private boolean isValidAPI(String api) throws SQLException, NamingException {
-
-        String verifyAPI = "SELECT * FROM api_keys WHERE api_key = ?";
-        PreparedStatement st = conn.prepareStatement(verifyAPI);
-        st.setString(1, api);
-        ResultSet rs = st.executeQuery();
+    private boolean addTransaction(String description, Double balance, int id) throws SQLException {
+        String t = "INSERT INTO transaction (description, post_balance, customer_id) VALUES (?,?,?);";
+        PreparedStatement s = conn.prepareStatement(t, Statement.RETURN_GENERATED_KEYS);
+        s.setString(1, description);
+        s.setDouble(2, balance);
+        s.setInt(3, id);
+        s.executeUpdate();
+        ResultSet rs = s.getGeneratedKeys();
         return rs.next();
-    }
-
-    private boolean isValidAccountNumber(String accountNumber) throws SQLException, NamingException {
-        String verifyAccount = "SELECT * FROM account WHERE account_number = ?";
-        PreparedStatement st;
-        st = conn.prepareStatement(verifyAccount);
-        st.setString(1, accountNumber);
-        ResultSet rs2 = st.executeQuery();
-        return rs2.next();
-
-    }
-
-    private boolean hasSufficentFunds(String accountNumber, double amount) throws SQLException, NamingException {
-        String verifyAccount = "SELECT account_number, current_balance FROM account WHERE account_number = ?";
-        PreparedStatement st2 = conn.prepareStatement(verifyAccount);
-        st2.setString(1, accountNumber);
-        ResultSet rs2 = st2.executeQuery();
-
-        if (rs2.next()) {
-
-            double balance = Double.parseDouble(rs2.getString("current_balance"));
-
-            if (balance >= amount) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     @POST
@@ -83,31 +58,42 @@ public class TransferResource {
         String from = info.getQueryParameters().getFirst("from");
         String to = info.getQueryParameters().getFirst("to");
         double amount = Double.parseDouble(info.getQueryParameters().getFirst("amount"));
+        Validator v = new Validator();
 
-        if (isValidAPI(apiKey) && isValidAccountNumber(from) && isValidAccountNumber(to)) {
+        if (v.isValidAPI(apiKey) && v.isValidAccountNumber(from) && v.isValidAccountNumber(to)) {
 
-            if (this.hasSufficentFunds(from, amount)) {
+            if (v.hasSufficentFunds(from, amount)) {
                 String updateBalance = "UPDATE account SET current_balance = current_balance + ? WHERE account_number = ?";
                 PreparedStatement st3 = conn.prepareStatement(updateBalance);
                 st3.setDouble(1, amount);
                 st3.setString(2, to);
                 st3.executeUpdate();
-                
+
                 String updateSenderBalance = "UPDATE account SET current_balance = current_balance - ? WHERE account_number = ?";
                 PreparedStatement st4 = conn.prepareStatement(updateSenderBalance);
                 st4.setDouble(1, amount);
                 st4.setString(2, from);
                 st4.executeUpdate();
-                
+
+                // update transaction
+                PreparedStatement ps = conn.prepareStatement("SELECT * FROM account WHERE account_number = ?");
+                ps.setString(1, from);
+                ResultSet s = ps.executeQuery();
+                if (s.next()) {
+                    int id = s.getInt("customer_id");
+                    double balance = s.getDouble("current_balance");
+
+                    this.addTransaction("Transfer", balance, id);
+                }
+
                 return Response.status(200).entity(gson.toJson(new APIResponse("200", "Transfer successful."))).build();
             } else {
-                return Response.status(500).entity(gson.toJson(new APIResponse("500", "The sender has insufficient funds to make this transfer."))).build();
+                return Response.status(200).entity(gson.toJson(new APIResponse("200", "The sender has insufficient funds to make this transfer."))).build();
             }
 
         } else {
-            return Response.status(500).entity(gson.toJson(new APIResponse("500", "Invalid API."))).build();
+            return Response.status(200).entity(gson.toJson(new APIResponse("200", "Invalid API."))).build();
         }
-
 
     }
 

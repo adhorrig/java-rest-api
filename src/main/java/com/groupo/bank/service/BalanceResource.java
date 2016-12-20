@@ -40,31 +40,25 @@ public class BalanceResource {
         String apiKey = info.getQueryParameters().getFirst("api_key");
         String accountNumber = info.getQueryParameters().getFirst("account_number");
 
-        String verifyAPI = "SELECT * FROM api_keys WHERE api_key = ?";
-        PreparedStatement st = db.prepareStatement(verifyAPI);
-        st.setString(1, apiKey);
-        ResultSet rs = st.executeQuery();
-        if (rs.next()) {
+        Validator v = new Validator();
 
+        if (v.isValidAPI(apiKey)) {
             String verifyAccount = "SELECT account_number, current_balance FROM account WHERE account_number = ?";
             PreparedStatement st2 = db.prepareStatement(verifyAccount);
             st2.setString(1, accountNumber);
             ResultSet rs2 = st2.executeQuery();
 
             if (rs2.next()) {
-                
+
                 String account = rs2.getString("account_number");
                 String balance = rs2.getString("current_balance");
                 return Response.status(200).entity(gson.toJson(new Balance(account, balance))).build();
 
-
-            } else {
-                return Response.status(500).entity(gson.toJson(new APIResponse("404", "Invalid account number."))).build();
             }
-
         } else {
-            return Response.status(500).entity(gson.toJson(new APIResponse("404", "Invalid API."))).build();
+            return Response.status(200).entity(gson.toJson(new APIResponse("200", "Invalid account number."))).build();
         }
+        return null;
 
     }
 
