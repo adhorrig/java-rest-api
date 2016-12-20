@@ -31,7 +31,7 @@ $("#withdrawl").click(function (e) {
         dataType: 'text',
         type: 'POST',
         success: function (data) {
-            console.log(data);
+            $('.message-block').show("slide");
         },
         error: function (xhr, status, error) {
             console.log(xhr);
