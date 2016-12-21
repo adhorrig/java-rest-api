@@ -2,18 +2,6 @@
     width: 800px;
 }
 
-.withdrawl-message-block{
-    display: none;
-}
-
-.customer-message-block{
-    display: none;
-}
-
-.balance-message-block{
-    display: none;
-}
-
-.transfer-message-block{
+.message-block{
     display: none;
 }

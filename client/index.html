@@ -30,163 +30,148 @@
 
 <div class="container">
 
-    <section class="balance">
-        <div class="card">
-            <div class="card-block">
 
-
-                <h3>Balance</h3>
-
-                <div class="balance-message-block">
-                    <div class="alert alert-success" role="alert">
-                        <span class="amount"></span>
-                    </div>
-                </div>
-
-
-                <div class="form-group row">
-                    <label for="account" class="col-xs-2 col-form-label">Account</label>
-                    <div class="col-xs-10">
-                        <input class="form-control" type="text" id="account">
-                    </div>
-                </div>
-
-                <button id="get-balance" class="btn-primary btn">Get balance</button>
+        <div class="message-block">
+            <div class="alert alert-success" role="alert">
+                <span class="message"></span>
             </div>
         </div>
-    </section>
-
-    <section class="transfer">
-        <div class="card">
-            <div class="card-block">
 
 
-                <h3>Transfer</h3>
+        <section class="balance">
+            <div class="card">
+                <div class="card-block">
 
-                <div class="transfer-message-block">
-                    <div class="alert alert-success" role="alert">
-                        <span class="data"></span>
+
+                    <h3>Balance</h3>
+
+
+                    <div class="form-group row">
+                        <label for="account" class="col-xs-2 col-form-label">Account</label>
+                        <div class="col-xs-10">
+                            <input class="form-control" type="text" id="account">
+                        </div>
                     </div>
+
+                    <button id="get-balance" class="btn-primary btn">Get balance</button>
                 </div>
-
-
-                <div class="form-group row">
-                    <label for="from" class="col-xs-2 col-form-label">From</label>
-                    <div class="col-xs-10">
-                        <input class="form-control" type="text" id="from">
-                    </div>
-                </div>
-
-                <div class="form-group row">
-                    <label for="to" class="col-xs-2 col-form-label">To</label>
-                    <div class="col-xs-10">
-                        <input class="form-control" type="text" id="to">
-                    </div>
-                </div>
-
-                <div class="form-group row">
-                    <label for="amount" class="col-xs-2 col-form-label">Amount</label>
-                    <div class="col-xs-10">
-                        <input class="form-control" type="number" id="amount">
-                    </div>
-                </div>
-
-                <button id="transfer" class="btn-primary btn">Transfer</button>
             </div>
-        </div>
-    </section>
+        </section>
+
+        <section class="transfer">
+            <div class="card">
+                <div class="card-block">
 
 
-    <section class="customer">
-
-        <div class="card">
-            <div class="card-block">
+                    <h3>Transfer</h3>
 
 
-                <h3>Add customer</h3>
-
-                <div class="customer-message-block">
-                    <div class="alert alert-success" role="alert">
-                        Customer added.
+                    <div class="form-group row">
+                        <label for="from" class="col-xs-2 col-form-label">From</label>
+                        <div class="col-xs-10">
+                            <input class="form-control" type="text" id="from">
+                        </div>
                     </div>
-                </div>
 
+                    <div class="form-group row">
+                        <label for="to" class="col-xs-2 col-form-label">To</label>
+                        <div class="col-xs-10">
+                            <input class="form-control" type="text" id="to">
+                        </div>
+                    </div>
 
-                <div class="form-group row">
-                    <label for="name" class="col-xs-2 col-form-label">Name</label>
-                    <div class="col-xs-10">
-                        <input class="form-control" type="text" id="name">
+                    <div class="form-group row">
+                        <label for="amount" class="col-xs-2 col-form-label">Amount</label>
+                        <div class="col-xs-10">
+                            <input class="form-control" type="number" id="amount">
+                        </div>
                     </div>
-                </div>
-                <div class="form-group row">
-                    <label for="email" class="col-xs-2 col-form-label">Email</label>
-                    <div class="col-xs-10">
-                        <input class="form-control" type="text" id="email">
-                    </div>
-                </div>
 
-                <div class="form-group row">
-                    <label for="email" class="col-xs-2 col-form-label">Address</label>
-                    <div class="col-xs-10">
-                        <input type="search" id="address-input"/>
-                    </div>
+                    <button id="transfer" class="btn-primary btn">Transfer</button>
                 </div>
-
-                <div class="form-group row">
-                    <label for="password" class="col-xs-2 col-form-label">Password</label>
-                    <div class="col-xs-10">
-                        <input class="form-control" type="password" id="password">
-                    </div>
-                </div>
-
-                <div class="form-group row">
-                    <label for="custom-select" class="col-xs-2 col-form-label">Account Type</label>
-                    <div class="col-xs-10">
-                        <select id="custom-select" class="custom-select">
-                            <option selected>Select</option>
-                            <option value="Current">Current</option>
-                            <option value="Savings">Savings</option>
-                        </select>
-                    </div>
-                </div>
-                <button id="add-customer" class="btn-primary btn">Add</button>
             </div>
-        </div>
-    </section>
-    <section class="withdrawl">
+        </section>
 
-        <div class="card">
-            <div class="card-block">
 
-                <h3>Withdrawl</h3>
+        <section class="customer">
 
-                <div class="withdrawl-message-block">
-                    <div class="alert alert-success" role="alert">
-                        Withdrawl complete.
+            <div class="card">
+                <div class="card-block">
+
+
+                    <h3>Add customer</h3>
+
+
+                    <div class="form-group row">
+                        <label for="name" class="col-xs-2 col-form-label">Name</label>
+                        <div class="col-xs-10">
+                            <input class="form-control" type="text" id="name">
+                        </div>
                     </div>
-                </div>
-
-                <div class="form-group row">
-                    <label for="account_number" class="col-xs-2 col-form-label">Account Number</label>
-                    <div class="col-xs-10">
-                        <input class="form-control" type="text" id="account_number">
+                    <div class="form-group row">
+                        <label for="email" class="col-xs-2 col-form-label">Email</label>
+                        <div class="col-xs-10">
+                            <input class="form-control" type="text" id="email">
+                        </div>
                     </div>
-                </div>
 
-                <div class="form-group row">
-                    <label for="amount" class="col-xs-2 col-form-label">Amount</label>
-                    <div class="col-xs-10">
-                        <input class="form-control" type="number" id="amount">
+                    <div class="form-group row">
+                        <label for="email" class="col-xs-2 col-form-label">Address</label>
+                        <div class="col-xs-10">
+                            <input type="search" id="address-input"/>
+                        </div>
                     </div>
+
+                    <div class="form-group row">
+                        <label for="password" class="col-xs-2 col-form-label">Password</label>
+                        <div class="col-xs-10">
+                            <input class="form-control" type="password" id="password">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="custom-select" class="col-xs-2 col-form-label">Account Type</label>
+                        <div class="col-xs-10">
+                            <select id="custom-select" class="custom-select">
+                                <option selected>Select</option>
+                                <option value="Current">Current</option>
+                                <option value="Savings">Savings</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button id="add-customer" class="btn-primary btn">Add</button>
                 </div>
-                <button id="withdrawl" class="btn-primary btn">Make Withdrawl</button>
             </div>
-        </div>
-    </section>
+        </section>
+        <section class="withdrawl">
+
+            <div class="card">
+                <div class="card-block">
+
+                    <h3>Withdrawl</h3>
 
 
-</div>
+                    <div class="form-group row">
+                        <label for="account_number" class="col-xs-2 col-form-label">Account Number</label>
+                        <div class="col-xs-10">
+                            <input class="form-control" type="text" id="account_number">
+                        </div>
+                    </div>
 
-<script src="js/main.js"></script>
+                    <div class="form-group row">
+                        <label for="amount" class="col-xs-2 col-form-label">Amount</label>
+                        <div class="col-xs-10">
+                            <input class="form-control" type="number" id="amount">
+                        </div>
+                    </div>
+                    <button id="withdrawl" class="btn-primary btn">Make Withdrawl</button>
+                </div>
+            </div>
+        </section>
+
+
+    </div>
+
+    <script src="js/main.js"></script>
 </body>
 </html>

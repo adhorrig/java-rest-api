@@ -10,6 +10,29 @@ var placesAutocomplete = places({
     container: document.querySelector('#address-input')
 });
 
+function get_data(method, url){
+    console.log(url);
+    console.log(method);
+    $.ajax({
+        url: url,
+        dataType: 'text',
+        type: method,
+        success: function (data) {
+            console.log(data);
+            $('.message-block').show("slide");
+            $('.message').text(data);
+        },
+        error: function (xhr, status, error) {
+            $('.message-block').show("slide");
+            console.log(xhr);
+            console.log(status);
+            console.log(error);
+            $('.data').text(xhr);
+        }
+    });
+
+}
+
 
 $("#transfer").click(function (e) {
     var from = $('#from').val();
@@ -23,29 +46,7 @@ $("#transfer").click(function (e) {
         api_key: key
     };
 
-    params = jQuery.param(params);
-    console.log(params);
-
-    url = api + '/api/transfer/create?' + params;
-    console.log(url);
-
-    $.ajax({
-        url: url,
-        dataType: 'text',
-        type: 'POST',
-        success: function (data) {
-            console.log(data);
-            $('.transfer-message-block').show("slide");
-            $('.data').text(data);
-
-
-        },
-        error: function (xhr, status, error) {
-            console.log(xhr);
-            console.log(status);
-            console.log(error);
-        }
-    });
+    get_data('POST', api + '/api/transfer/create?' + jQuery.param(params));
 });
 
 
@@ -57,28 +58,7 @@ $("#get-balance").click(function (e) {
         api_key: key
     };
 
-    params = jQuery.param(params);
-    console.log(params);
-
-    url = api + '/api/balance?' + params;
-    console.log(url);
-
-    $.ajax({
-        url: url,
-        dataType: 'text',
-        type: 'GET',
-        success: function (data) {
-            console.log(data);
-            $('.balance-message-block').show("slide");
-            $('.amount').text(data);
-
-        },
-        error: function (xhr, status, error) {
-            console.log(xhr);
-            console.log(status);
-            console.log(error);
-        }
-    });
+    get_data('GET', api + '/api/balance?' + jQuery.param(params));
 });
 
 
@@ -92,25 +72,7 @@ $("#withdrawl").click(function (e) {
         api_key: key
     };
 
-    params = jQuery.param(params);
-    console.log(params);
-
-    url = api + '/api/withdrawl?' + params;
-    console.log(url);
-
-    $.ajax({
-        url: url,
-        dataType: 'text',
-        type: 'POST',
-        success: function (data) {
-            $('.withdrawl-message-block').show("slide");
-        },
-        error: function (xhr, status, error) {
-            console.log(xhr);
-            console.log(status);
-            console.log(error);
-        }
-    });
+    get_data('POST', api + '/api/withdrawl?' + jQuery.param(params));
 });
 
 
@@ -123,7 +85,7 @@ $("#add-customer").click(function (e) {
     var address = $('#address-input').val();
     var option = $("#custom-select").val();
 
-    var customer = {
+    var params = {
         name: customer_name,
         email: email,
         address: address,
@@ -131,25 +93,7 @@ $("#add-customer").click(function (e) {
         account_type: option
     };
 
-    customer = jQuery.param(customer);
-    console.log(customer);
-
-    url = api + '/api/customer/create?' + customer;
-    console.log(url);
-
-    $.ajax({
-        url: url,
-        dataType: 'text',
-        type: 'POST',
-        success: function (data) {
-            $('.customer-message-block').show("slide");
-        },
-        error: function (xhr, status, error) {
-            console.log(xhr);
-            console.log(status);
-            console.log(error);
-        }
-    });
+    get_data('POST', api + '/api/customer/create?' + jQuery.param(params));
 
 
 });
