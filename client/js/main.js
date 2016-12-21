@@ -25,6 +25,12 @@ function get_data(method, url){
 
 }
 
+function get_customers(){
+	var params = {
+		api_key: key
+	}
+	get_data('GET', api + '/api/customer?' + jQuery.param(params));
+}
 
 $("#transfer").click(function (e) {
     var from = $('#from').val();
