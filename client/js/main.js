@@ -36,6 +36,16 @@ $("#search-customer").click(function(e){
 
 });
 
+$("#get-transactions").click(function(e){
+    var id = $('#customer_id').val();
+    var params = {
+        api_key: key
+    };
+
+    ajaxRequest('GET', api + '/api/transaction/'+id+'?' + jQuery.param(params));
+
+});
+
 
 $("#transfer").click(function (e) {
     var from = $('#from').val();
