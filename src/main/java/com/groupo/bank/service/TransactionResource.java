@@ -58,7 +58,7 @@ public class TransactionResource {
     @GET
     @Path("/{id}")
     @Produces("application/json")
-    public Response getCustomerById(@PathParam("id") int id, @Context UriInfo info) throws SQLException, NamingException {
+    public Response getTransactionById(@PathParam("id") int id, @Context UriInfo info) throws SQLException, NamingException {
 
         Gson gson = new Gson();
         Validator v = new Validator();
