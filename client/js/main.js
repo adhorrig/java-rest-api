@@ -77,8 +77,6 @@ $("#withdrawl").click(function (e) {
 
 
 $("#add-customer").click(function (e) {
-
-
     var customer_name = $('#name').val();
     var email = $('#email').val();
     var password = $('#password').val();
