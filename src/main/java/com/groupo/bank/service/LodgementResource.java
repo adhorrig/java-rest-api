@@ -44,32 +44,44 @@ public class LodgementResource {
         Validator v = new Validator();
 
         if (v.isValidAPI(apiKey) && v.isValidAccountNumber(account)) {
-
-            String updateBalance = "UPDATE account SET current_balance = current_balance + ? WHERE account_number = ?";
-            PreparedStatement st3 = db.prepareStatement(updateBalance);
-            st3.setDouble(1, amount);
-            st3.setString(2, account);
-            st3.executeUpdate();
-
-            PreparedStatement ps = db.prepareStatement("SELECT current_balance, customer_id FROM account WHERE account_number = ?");
-            ps.setString(1, account);
-            ResultSet s = ps.executeQuery();
-            if (s.next()) {
-                int id = s.getInt("customer_id");
-                double balance = s.getDouble("current_balance");
+            
+            PreparedStatement p = db.prepareStatement("SELECT status from account where account_number = ?");
+            p.setString(1, account);
+            ResultSet rs = p.executeQuery();  
                 
-                
-                TransactionResource t = new TransactionResource();
-                t.addTransaction("Lodgement", balance, id);
+            if(rs.next()){
+                int status = rs.getInt("status");
+                if(status == 1){
+                    String updateBalance = "UPDATE account SET current_balance = current_balance + ? WHERE account_number = ?";
+                   PreparedStatement st3 = db.prepareStatement(updateBalance);
+                   st3.setDouble(1, amount);
+                   st3.setString(2, account);
+                   st3.executeUpdate();
+
+                   PreparedStatement ps = db.prepareStatement("SELECT current_balance, customer_id FROM account WHERE account_number = ?");
+                   ps.setString(1, account);
+                   ResultSet s = ps.executeQuery();
+                   if (s.next()) {
+                       int id = s.getInt("customer_id");
+                       double balance = s.getDouble("current_balance");
+
+
+                       TransactionResource t = new TransactionResource();
+                       t.addTransaction("Lodgement", balance, id);   
+                   }
+
+                   return Response.status(200).entity(gson.toJson(new APIResponse("200", "Lodgement complete."))).build();
+
+               } else {
+                    return Response.status(200).entity(gson.toJson(new APIResponse("Error", "This account has been removed and therefore cannot be lodged to."))).build();
+                }
             }
-
-            return Response.status(200).entity(gson.toJson(new APIResponse("200", "Lodgement complete."))).build();
-
-        } else {
+             else {
             db.close();
             return Response.status(200).entity(gson.toJson(new APIResponse("200", "Invalid API."))).build();
         }
 
     }
-
+    return null;
+    }
 }

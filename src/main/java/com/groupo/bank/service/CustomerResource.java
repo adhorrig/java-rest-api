@@ -20,6 +20,7 @@ import java.util.UUID;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -202,4 +203,30 @@ public class CustomerResource {
         }
 
     }
+    
+    @GET
+    @Path("delete/{id}")
+    @Produces("application/json")
+    public Response deleteCustomerById(@PathParam("id") int id, @Context UriInfo info) throws SQLException, NamingException {
+
+        Gson gson = new Gson();
+        Validator v = new Validator();
+        Connection db = getConnection();
+
+        String apiKey = info.getQueryParameters().getFirst("api_key");
+
+        if (v.isValidAPI(apiKey)) {
+            String deleteCustomer = "UPDATE account SET status = 0 WHERE customer_id = ?";
+            PreparedStatement st = db.prepareStatement(deleteCustomer);
+            st.setInt(1, id);
+            st.executeUpdate();
+            db.close();
+            return Response.status(200).entity(gson.toJson("Account has been removed.")).build();
+
+        }
+
+        return null;
+
+    }
+    
 }

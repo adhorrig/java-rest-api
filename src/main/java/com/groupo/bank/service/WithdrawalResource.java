@@ -45,34 +45,45 @@ public class WithdrawalResource {
         Connection db = getConnection();
 
         if (v.isValidAPI(apiKey) && v.isValidAccountNumber(account)) {
+            PreparedStatement p = db.prepareStatement("SELECT status from account where account_number = ?");
+            p.setString(1, account);
+            ResultSet rs = p.executeQuery();
 
-            if (v.hasSufficentFunds(account, amount)) {
-                String updateBalance = "UPDATE account SET current_balance = current_balance - ? WHERE account_number = ?";
-                PreparedStatement st3 = db.prepareStatement(updateBalance);
-                st3.setDouble(1, amount);
-                st3.setString(2, account);
-                st3.executeUpdate();
+            if (rs.next()) {
+                int status = rs.getInt("status");
+                if (status == 1) {
+                    if (v.hasSufficentFunds(account, amount)) {
+                        String updateBalance = "UPDATE account SET current_balance = current_balance - ? WHERE account_number = ?";
+                        PreparedStatement st3 = db.prepareStatement(updateBalance);
+                        st3.setDouble(1, amount);
+                        st3.setString(2, account);
+                        st3.executeUpdate();
 
-                PreparedStatement ps = db.prepareStatement("SELECT current_balance, customer_id FROM account WHERE account_number = ?");
-                ps.setString(1, account);
-                ResultSet s = ps.executeQuery();
-                if (s.next()) {
-                    int id = s.getInt("customer_id");
-                    double balance = s.getDouble("current_balance");
+                        PreparedStatement ps = db.prepareStatement("SELECT current_balance, customer_id FROM account WHERE account_number = ?");
+                        ps.setString(1, account);
+                        ResultSet s = ps.executeQuery();
+                        if (s.next()) {
+                            int id = s.getInt("customer_id");
+                            double balance = s.getDouble("current_balance");
 
-                    TransactionResource t = new TransactionResource();
-                    t.addTransaction("Withdrawal", balance, id);
+                            TransactionResource t = new TransactionResource();
+                            t.addTransaction("Withdrawal", balance, id);
+                        }
+
+                        return Response.status(200).entity(gson.toJson(new APIResponse("200", "Withdrawl complete."))).build();
+                    } else {
+                        return Response.status(200).entity(gson.toJson(new APIResponse("200", "The sender has insufficient funds to make this transfer."))).build();
+                    }
+                } else {
+                    return Response.status(200).entity(gson.toJson(new APIResponse("Error", "Cant withdraw from a removed account."))).build();
                 }
 
-                return Response.status(200).entity(gson.toJson(new APIResponse("200", "Withdrawl complete."))).build();
             } else {
-                return Response.status(200).entity(gson.toJson(new APIResponse("200", "The sender has insufficient funds to make this transfer."))).build();
+                return Response.status(200).entity(gson.toJson(new APIResponse("200", "Invalid API."))).build();
             }
 
-        } else {
-            return Response.status(200).entity(gson.toJson(new APIResponse("200", "Invalid API."))).build();
         }
 
+        return null;
     }
-
 }

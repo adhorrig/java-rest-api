@@ -24,7 +24,6 @@ import javax.ws.rs.core.UriInfo;
 @Produces("application/json")
 public class TransferResource {
 
-
     protected Connection getConnection() throws SQLException, NamingException {
         InitialContext ic = new InitialContext();
         DataSource ds = (DataSource) ic.lookup("jdbc/DSTix");
@@ -49,7 +48,7 @@ public class TransferResource {
     public Response createTransfer(@Context UriInfo info) throws SQLException, NamingException {
 
         Gson gson = new Gson();
-        
+
         String apiKey = info.getQueryParameters().getFirst("api_key");
         String from = info.getQueryParameters().getFirst("from");
         String to = info.getQueryParameters().getFirst("to");
@@ -57,43 +56,54 @@ public class TransferResource {
         Validator v = new Validator();
         Connection db = getConnection();
         if (v.isValidAPI(apiKey) && v.isValidAccountNumber(from) && v.isValidAccountNumber(to)) {
+            if (v.isValidAPI(apiKey)) {
+                PreparedStatement p = db.prepareStatement("SELECT status from account where account_number = ?");
+                p.setString(1, from);
+                ResultSet rs = p.executeQuery();
+                if (rs.next()) {
+                    int status = rs.getInt("status");
+                    if (status == 1) {
+                        if (v.hasSufficentFunds(from, amount)) {
+                            String updateBalance = "UPDATE account SET current_balance = current_balance + ? WHERE account_number = ?";
+                            PreparedStatement st3 = db.prepareStatement(updateBalance);
+                            st3.setDouble(1, amount);
+                            st3.setString(2, to);
+                            st3.executeUpdate();
 
-            if (v.hasSufficentFunds(from, amount)) {
-                String updateBalance = "UPDATE account SET current_balance = current_balance + ? WHERE account_number = ?";
-                PreparedStatement st3 = db.prepareStatement(updateBalance);
-                st3.setDouble(1, amount);
-                st3.setString(2, to);
-                st3.executeUpdate();
+                            String updateSenderBalance = "UPDATE account SET current_balance = current_balance - ? WHERE account_number = ?";
+                            PreparedStatement st4 = db.prepareStatement(updateSenderBalance);
+                            st4.setDouble(1, amount);
+                            st4.setString(2, from);
+                            st4.executeUpdate();
 
-                String updateSenderBalance = "UPDATE account SET current_balance = current_balance - ? WHERE account_number = ?";
-                PreparedStatement st4 = db.prepareStatement(updateSenderBalance);
-                st4.setDouble(1, amount);
-                st4.setString(2, from);
-                st4.executeUpdate();
+                            // update transaction
+                            PreparedStatement ps = db.prepareStatement("SELECT * FROM account WHERE account_number = ?");
+                            ps.setString(1, from);
+                            ResultSet s = ps.executeQuery();
+                            if (s.next()) {
+                                int id = s.getInt("customer_id");
+                                double balance = s.getDouble("current_balance");
 
-                // update transaction
-                PreparedStatement ps = db.prepareStatement("SELECT * FROM account WHERE account_number = ?");
-                ps.setString(1, from);
-                ResultSet s = ps.executeQuery();
-                if (s.next()) {
-                    int id = s.getInt("customer_id");
-                    double balance = s.getDouble("current_balance");
-                    
-                    
-                    TransactionResource t = new TransactionResource();
-                    t.addTransaction("Transfer", balance, id);
+                                TransactionResource t = new TransactionResource();
+                                t.addTransaction("Transfer", balance, id);
+                            }
+
+                            return Response.status(200).entity(gson.toJson(new APIResponse("200", "Transfer successful."))).build();
+                        } else {
+
+                            return Response.status(200).entity(gson.toJson(new APIResponse("200", "The sender has insufficient funds to make this transfer."))).build();
+                        }
+                    } else {
+                        return Response.status(200).entity(gson.toJson(new APIResponse("Error", "Cant send money from a removed account."))).build();
+
+                    }
                 }
-                    
-                return Response.status(200).entity(gson.toJson(new APIResponse("200", "Transfer successful."))).build();
-            } else {
 
-                return Response.status(200).entity(gson.toJson(new APIResponse("200", "The sender has insufficient funds to make this transfer."))).build();
+            } else {
+                return Response.status(200).entity(gson.toJson(new APIResponse("200", "Invalid API."))).build();
             }
 
-        } else {
-            return Response.status(200).entity(gson.toJson(new APIResponse("200", "Invalid API."))).build();
         }
-
+        return null;
     }
-
 }

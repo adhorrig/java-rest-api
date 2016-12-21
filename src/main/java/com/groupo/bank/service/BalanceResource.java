@@ -43,27 +43,40 @@ public class BalanceResource {
         Validator v = new Validator();
 
         if (v.isValidAPI(apiKey)) {
-            String verifyAccount = "SELECT account_number, current_balance FROM account WHERE account_number = ?";
-            PreparedStatement st2 = db.prepareStatement(verifyAccount);
-            st2.setString(1, accountNumber);
-            ResultSet rs2 = st2.executeQuery();
+            PreparedStatement p = db.prepareStatement("SELECT status from account where account_number = ?");
+            p.setString(1, accountNumber);
+            ResultSet rs = p.executeQuery();
 
-            if (rs2.next()) {
+            if (rs.next()) {
+                int status = rs.getInt("status");
+                if (status == 1) {
+                    String verifyAccount = "SELECT account_number, current_balance FROM account WHERE account_number = ?";
+                    PreparedStatement st2 = db.prepareStatement(verifyAccount);
+                    st2.setString(1, accountNumber);
+                    ResultSet rs2 = st2.executeQuery();
 
-                String account = rs2.getString("account_number");
-                String balance = rs2.getString("current_balance");
-                
-                return Response.status(200).entity(gson.toJson(new Balance(account, balance))).build();
+                    if (rs2.next()) {
 
+                        String account = rs2.getString("account_number");
+                        String balance = rs2.getString("current_balance");
+
+                        return Response.status(200).entity(gson.toJson(new Balance(account, balance))).build();
+
+                    }
+                } else {
+                    return Response.status(200).entity(gson.toJson(new APIResponse("Error", "Cant view the balance of a removed account."))).build();
+                }
+
+            } else {
+                db.close();
+                return Response.status(200).entity(gson.toJson(new APIResponse("200", "Invalid API key."))).build();
             }
-        } else {
+
             db.close();
-            return Response.status(200).entity(gson.toJson(new APIResponse("200", "Invalid API key."))).build();
+            return Response.status(200).entity(gson.toJson(new APIResponse("200", "Invalid account number."))).build();
+
         }
-        
-        db.close();
-        return Response.status(200).entity(gson.toJson(new APIResponse("200", "Invalid account number."))).build();
+    return null;
 
     }
-
 }

@@ -67,8 +67,8 @@ public class TransactionResource {
         String apiKey = info.getQueryParameters().getFirst("api_key");
 
         if (v.isValidAPI(apiKey)) {
-            String verifyAPI = "SELECT * FROM transaction WHERE customer_id = ?";
-            PreparedStatement st = db.prepareStatement(verifyAPI);
+            String getTransactions = "SELECT transaction.customer_id, transaction.description, transaction.post_balance, account.status FROM transaction INNER JOIN account ON transaction.customer_id = account.customer_id WHERE status = 1 and transaction.customer_id = ?";
+            PreparedStatement st = db.prepareStatement(getTransactions);
             st.setInt(1, id);
             ResultSet rs = st.executeQuery();
             List events = new ArrayList<>();
@@ -78,7 +78,13 @@ public class TransactionResource {
 
             }
             db.close();
-            return Response.status(200).entity(gson.toJson(events)).build();
+            
+            if(events.size() > 1){
+                return Response.status(200).entity(gson.toJson(events)).build();
+            } else {
+                return Response.status(200).entity(gson.toJson("Invalid ID. No acount matching.")).build();
+            }
+            
 
         }
 

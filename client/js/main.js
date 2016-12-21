@@ -36,6 +36,16 @@ $("#search-customer").click(function(e){
 
 });
 
+$("#delete-customer").click(function(e){
+    var id = $('#remove-id').val();
+    var params = {
+        api_key: key
+    };
+
+    ajaxRequest('GET', api + '/api/customer/delete/'+id+'?' + jQuery.param(params));
+
+});
+
 $("#get-transactions").click(function(e){
     var id = $('#customer_id').val();
     var params = {
