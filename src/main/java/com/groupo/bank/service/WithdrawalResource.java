@@ -21,7 +21,7 @@ import javax.ws.rs.core.UriInfo;
 @Path("/withdrawl")
 @Produces("application/json")
 
-public class WithdrawlResource {
+public class WithdrawalResource {
     
 
     private Connection getConnection() throws SQLException, NamingException {

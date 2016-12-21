@@ -4,7 +4,7 @@ package com.groupo.bank.service;
  *
  * @author anthonybloomer
  */
-public class Withdrawl {
+public class Withdrawal {
     
     
     

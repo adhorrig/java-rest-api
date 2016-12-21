@@ -27,7 +27,9 @@ public class Validator {
         PreparedStatement st = db.prepareStatement(verifyAPI);
         st.setString(1, api);
         ResultSet rs = st.executeQuery();
-        return rs.next();
+        boolean isValid = rs.next();
+        rs.close();
+        return isValid;
     }
 
     public boolean isValidAccountNumber(String accountNumber) throws SQLException, NamingException {
@@ -37,7 +39,9 @@ public class Validator {
         st = db.prepareStatement(verifyAccount);
         st.setString(1, accountNumber);
         ResultSet rs2 = st.executeQuery();
-        return rs2.next();
+        boolean isValid = rs2.next();
+        db.close();
+        return isValid;
 
     }
 
@@ -47,12 +51,15 @@ public class Validator {
         PreparedStatement st2 = db.prepareStatement(verifyAccount);
         st2.setString(1, accountNumber);
         ResultSet rs2 = st2.executeQuery();
+        db.close();
 
         if (rs2.next()) {
 
             double balance = Double.parseDouble(rs2.getString("current_balance"));
+            db.close();
 
             if (balance >= amount) {
+                
                 return true;
             }
         }

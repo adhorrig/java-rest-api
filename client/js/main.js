@@ -6,7 +6,7 @@ var api = 'http://0.0.0.0:8080';
 var key = '3cf0e880-a782-4ce6-a63c-7ae95891051f';
 
 
-function get_data(method, url){
+function ajaxRequest(method, url){
     console.log(url);
     console.log(method);
     $('.message-block').hide("slide");
@@ -23,14 +23,23 @@ function get_data(method, url){
             $('.message').text(error);
         }
     });
-
 }
 
+
 $("#get-customers").click(function(e){
-    var params = {
-        api_key: key
-    };
-    get_data('GET', api + '/api/customer?' + jQuery.param(params));
+    $('.message-block').hide("slide");
+    $.ajax({
+        url:  api + '/api/customer?',
+        dataType: 'text',
+        type: 'GET',
+        success: function (data) {
+            // DO SOMETHING WITH DATA
+        },
+        error: function (xhr, status, error) {
+            $('.message-block').show("slide");
+            $('.message').text(error);
+        }
+    });
 });
 
 
@@ -46,7 +55,7 @@ $("#transfer").click(function (e) {
         api_key: key
     };
 
-    get_data('POST', api + '/api/transfer/create?' + jQuery.param(params));
+    ajaxRequest('POST', api + '/api/transfer/create?' + jQuery.param(params));
 });
 
 
@@ -58,7 +67,7 @@ $("#get-balance").click(function (e) {
         api_key: key
     };
 
-    get_data('GET', api + '/api/balance?' + jQuery.param(params));
+    ajaxRequest('GET', api + '/api/balance?' + jQuery.param(params));
 });
 
 
@@ -72,7 +81,7 @@ $("#withdrawl").click(function (e) {
         api_key: key
     };
 
-    get_data('POST', api + '/api/withdrawl?' + jQuery.param(params));
+    ajaxRequest('POST', api + '/api/withdrawl?' + jQuery.param(params));
 });
 
 
@@ -92,7 +101,7 @@ $("#add-customer").click(function (e) {
         api_key: key
     };
 
-    get_data('POST', api + '/api/customer/create?' + jQuery.param(params));
+    ajaxRequest('POST', api + '/api/customer/create?' + jQuery.param(params));
 
 
 });
@@ -107,5 +116,5 @@ $("#lodgement").click(function (e) {
         api_key: key
     };
 
-    get_data('POST', api + '/api/lodgement?' + jQuery.param(params));
+    ajaxRequest('POST', api + '/api/lodgement?' + jQuery.param(params));
 });

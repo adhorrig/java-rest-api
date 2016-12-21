@@ -79,9 +79,9 @@ public class TransferResource {
                     int id = s.getInt("customer_id");
                     double balance = s.getDouble("current_balance");
 
-                    this.addTransaction("Transfer", balance, id);
+                    addTransaction("Transfer", balance, id);
                 }
-
+                    
                 return Response.status(200).entity(gson.toJson(new APIResponse("200", "Transfer successful."))).build();
             } else {
 
