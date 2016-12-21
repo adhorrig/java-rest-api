@@ -10,6 +10,45 @@ var placesAutocomplete = places({
     container: document.querySelector('#address-input')
 });
 
+
+$("#transfer").click(function (e) {
+    var from = $('#from').val();
+    var to = $('#to').val();
+    var amount = $('#amount').val();
+
+    var params = {
+        from: from,
+        to: to,
+        amount: amount,
+        api_key: key
+    };
+
+    params = jQuery.param(params);
+    console.log(params);
+
+    url = api + '/api/transfer/create?' + params;
+    console.log(url);
+
+    $.ajax({
+        url: url,
+        dataType: 'text',
+        type: 'POST',
+        success: function (data) {
+            console.log(data);
+            $('.transfer-message-block').show("slide");
+            $('.data').text(data);
+
+
+        },
+        error: function (xhr, status, error) {
+            console.log(xhr);
+            console.log(status);
+            console.log(error);
+        }
+    });
+});
+
+
 $("#get-balance").click(function (e) {
     var account = $('#account').val();
 
@@ -31,7 +70,6 @@ $("#get-balance").click(function (e) {
         success: function (data) {
             console.log(data);
             $('.balance-message-block').show("slide");
-            console.log(data[0]['balance']);
             $('.amount').text(data);
 
         },
