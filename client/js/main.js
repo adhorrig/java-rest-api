@@ -27,19 +27,13 @@ function ajaxRequest(method, url){
 
 
 $("#get-customers").click(function(e){
-    $('.message-block').hide("slide");
-    $.ajax({
-        url:  api + '/api/customer?',
-        dataType: 'text',
-        type: 'GET',
-        success: function (data) {
-            // DO SOMETHING WITH DATA
-        },
-        error: function (xhr, status, error) {
-            $('.message-block').show("slide");
-            $('.message').text(error);
-        }
-    });
+
+    var params = {
+        api_key: key
+    };
+
+    ajaxRequest('GET', api + '/api/customer?' + jQuery.param(params));
+
 });
 
 
@@ -91,6 +85,8 @@ $("#add-customer").click(function (e) {
     var password = $('#password').val();
     var address = $('#address-input').val();
     var option = $("#custom-select").val();
+
+
 
     var params = {
         name: customer_name,
