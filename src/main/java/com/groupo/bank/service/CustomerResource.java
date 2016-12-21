@@ -78,6 +78,113 @@ public class CustomerResource {
 
     }
 
+    private boolean isSavingsAccount(String accountNumber) throws SQLException, NamingException {
+        PreparedStatement st;
+        Connection db = getConnection();
+        st = db.prepareStatement("SELECT * FROM customer AS c JOIN account AS a ON c.customer_id = a.customer_id WHERE account_type = 2 AND account_number = ?");
+        st.setString(1, accountNumber);
+        ResultSet rs2 = st.executeQuery();
+        boolean isValid = rs2.next();
+        db.close();
+        return isValid;
+    }
+
+    private boolean isCurrentAccount(String accountNumber) throws SQLException, NamingException {
+        PreparedStatement st;
+        Connection db = getConnection();
+        st = db.prepareStatement("SELECT * FROM customer AS c JOIN account AS a ON c.customer_id = a.customer_id WHERE account_type = 1 AND account_number = ?");
+        st.setString(1, accountNumber);
+        ResultSet rs2 = st.executeQuery();
+        boolean isValid = rs2.next();
+        db.close();
+        return isValid;
+    }
+
+    @POST
+    @Path("/add-account")
+    @Produces("application/json")
+    public Response addCustomerAccountType(@Context UriInfo info) throws SQLException, NamingException {
+        Gson gson = new Gson();
+        Validator v = new Validator();
+        String apiKey = info.getQueryParameters().getFirst("api_key");
+        String account = info.getQueryParameters().getFirst("account");
+        String accountType;
+
+        try {
+            accountType = info.getQueryParameters().getFirst("account_type");
+            if (accountType.equalsIgnoreCase("Current")) {
+                accountType = "1";
+            } else {
+                accountType = "2";
+            }
+
+        } catch (java.lang.NullPointerException e) {
+            return Response.status(200).entity(gson.toJson(new APIResponse("200", "No account type specified."))).build();
+        }
+
+        if (v.isValidAccountNumber(account)) {
+
+            boolean hasC = isCurrentAccount(account);
+            boolean hasS = isSavingsAccount(account);
+
+            if (hasC && hasS) {
+                return Response.status(200).entity(gson.toJson(new APIResponse("200", "User has already a current and savings account."))).build();
+            }
+
+            if (accountType.equals("1") && hasC) {
+                return Response.status(200).entity(gson.toJson(new APIResponse("200", "User has a current account."))).build();
+            } else if (accountType.equals("2") && hasS) {
+                return Response.status(200).entity(gson.toJson(new APIResponse("200", "User has a savings account."))).build();
+            } else {
+
+                PreparedStatement st;
+                Connection db = getConnection();
+                st = db.prepareStatement("SELECT * FROM account WHERE account_number = ?");
+                st.setString(1, account);
+                ResultSet rs2 = st.executeQuery();
+
+                while (rs2.next()) {
+                    String aid = rs2.getString("customer_id");
+                    System.out.println(aid);
+                    String sort = UUID.randomUUID().toString().substring(0, 8);
+                    String an = UUID.randomUUID().toString().substring(0, 8);
+                    int balance = 0;
+
+                    PreparedStatement st3;
+                    st3 = db.prepareStatement("SELECT * FROM account WHERE account_type = ? AND customer_id = ?");
+                    st3.setInt(1, Integer.parseInt(accountType));
+                    st3.setInt(2, Integer.parseInt(aid));
+                    ResultSet rs3 = st3.executeQuery();
+
+                    if (rs3.next()) {
+                        System.out.println(rs3.getInt("account_type"));
+                        return Response.status(200).entity(gson.toJson(new APIResponse("200", "You can't add another type of account."))).build();
+                    } else {
+                        String insertNewAccount = "INSERT INTO account"
+                                + "(customer_id, sort_code, account_number, current_balance, account_type) VALUES"
+                                + "(?,?,?,?, ?)";
+
+                        PreparedStatement stm = db.prepareStatement(insertNewAccount);
+                        stm.setInt(1, Integer.parseInt(aid));
+                        stm.setString(2, sort);
+                        stm.setString(3, an);
+                        stm.setDouble(4, balance);
+                        stm.setString(5, accountType);
+                        stm.executeUpdate();
+
+                        return Response.status(200).entity(gson.toJson(new APIResponse("200", "Account added"))).build();
+                    }
+
+                }
+
+            }
+
+        }
+
+        return Response.status(200).entity(gson.toJson(new APIResponse("200", "Invalid API key"))).build();
+
+    }
+
     @GET
     @Path("/")
     @Produces("application/json")
