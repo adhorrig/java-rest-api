@@ -51,7 +51,6 @@ public class Validator {
         PreparedStatement st2 = db.prepareStatement(verifyAccount);
         st2.setString(1, accountNumber);
         ResultSet rs2 = st2.executeQuery();
-        db.close();
 
         if (rs2.next()) {
 
