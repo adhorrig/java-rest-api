@@ -2,8 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Customers</title>
-
+    <title>Transfer</title>
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/main.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/places.js/1/places.min.js"></script>
@@ -31,8 +30,6 @@
 <br>
 
 <div class="container">
-
-
     <div class="message-block">
         <div class="alert alert-success" role="alert">
             <span class="message"></span>
@@ -40,65 +37,42 @@
     </div>
 
 
-    <section class="customer">
-
+    <section class="transfer">
         <div class="card">
             <div class="card-block">
 
 
-                <h3>Add customer</h3>
+                <h3>Transfer</h3>
 
 
                 <div class="form-group row">
-                    <label for="name" class="col-xs-2 col-form-label">Name</label>
+                    <label for="from" class="col-xs-2 col-form-label">From</label>
                     <div class="col-xs-10">
-                        <input class="form-control" type="text" id="name">
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label for="email" class="col-xs-2 col-form-label">Email</label>
-                    <div class="col-xs-10">
-                        <input class="form-control" type="text" id="email">
+                        <input class="form-control" type="text" id="from">
                     </div>
                 </div>
 
                 <div class="form-group row">
-                    <label for="email" class="col-xs-2 col-form-label">Address</label>
+                    <label for="to" class="col-xs-2 col-form-label">To</label>
                     <div class="col-xs-10">
-                        <input type="search" id="address-input"/>
+                        <input class="form-control" type="text" id="to">
                     </div>
                 </div>
 
                 <div class="form-group row">
-                    <label for="password" class="col-xs-2 col-form-label">Password</label>
+                    <label for="amount" class="col-xs-2 col-form-label">Amount</label>
                     <div class="col-xs-10">
-                        <input class="form-control" type="password" id="password">
+                        <input class="form-control" type="number" id="amount">
                     </div>
                 </div>
 
-                <div class="form-group row">
-                    <label for="custom-select" class="col-xs-2 col-form-label">Account Type</label>
-                    <div class="col-xs-10">
-                        <select id="custom-select" class="custom-select">
-                            <option selected>Select</option>
-                            <option value="Current">Current</option>
-                            <option value="Savings">Savings</option>
-                        </select>
-                    </div>
-                </div>
-                <button id="add-customer" class="btn-primary btn">Add</button>
+                <button id="transfer" class="btn-primary btn">Transfer</button>
             </div>
         </div>
     </section>
-
-
 </div>
 
 <script src="js/main.js"></script>
-<script>
-    var placesAutocomplete = places({
-        container: document.querySelector('#address-input')
-    });
-</script>
+
 </body>
 </html>

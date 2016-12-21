@@ -6,10 +6,6 @@ var api = 'http://0.0.0.0:8080';
 var key = '3cf0e880-a782-4ce6-a63c-7ae95891051f';
 
 
-var placesAutocomplete = places({
-    container: document.querySelector('#address-input')
-});
-
 function get_data(method, url){
     console.log(url);
     console.log(method);
