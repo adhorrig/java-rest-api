@@ -20,7 +20,6 @@ import java.util.UUID;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
-import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -159,7 +158,7 @@ public class CustomerResource {
 
                     if (rs3.next()) {
                         System.out.println(rs3.getInt("account_type"));
-                        return Response.status(200).entity(gson.toJson(new APIResponse("200", "You can't add another type of account."))).build();
+                        return Response.status(200).entity(gson.toJson(new APIResponse("200", "You cant add another savings account."))).build();
                     } else {
                         String insertNewAccount = "INSERT INTO account"
                                 + "(customer_id, sort_code, account_number, current_balance, account_type) VALUES"

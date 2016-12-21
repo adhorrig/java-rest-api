@@ -25,6 +25,22 @@ function ajaxRequest(method, url){
     });
 }
 
+$("#add-account-type").click(function (e) {
+    var account = $('#account-number').val();
+    var option = $("#new-account-select").val();
+
+    console.log(account);
+    console.log(option);
+
+    var params = {
+        account: account,
+        api_key: key,
+        account_type: option
+    };
+
+    ajaxRequest('POST', api + '/api/customer/add-account?' + jQuery.param(params));
+});
+
 
 $("#search-customer").click(function(e){
     var id = $('#customer-id').val();
