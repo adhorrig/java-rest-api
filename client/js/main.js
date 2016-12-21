@@ -76,4 +76,6 @@ $("#add-customer").click(function (e) {
 		api_key: key
     };
     get_data('POST', api + '/api/customer/create?' + jQuery.param(params));
+    var item = document.getElementById("result");
+    item.innerHTML = 'Account has been created';
 });
