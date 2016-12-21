@@ -31,7 +31,7 @@ public class LodgementResource {
     @POST
     @Path("/")
     @Produces("application/json")
-    public Response mix(@Context UriInfo info) throws SQLException, NamingException {
+    public Response createLodgement(@Context UriInfo info) throws SQLException, NamingException {
 
         Gson gson = new Gson();
         Connection db = getConnection();

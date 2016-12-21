@@ -81,7 +81,7 @@ public class CustomerResource {
     @GET
     @Path("/")
     @Produces("application/json")
-    public Response getList(@Context UriInfo info) throws SQLException, NamingException {
+    public Response getCustomerList(@Context UriInfo info) throws SQLException, NamingException {
         Gson gson = new Gson();
         Validator v = new Validator();
 
@@ -111,7 +111,7 @@ public class CustomerResource {
     @POST
     @Path("/create")
     @Produces("application/json")
-    public Response mix(@Context UriInfo info) throws SQLException, NamingException, NoSuchAlgorithmException, UnsupportedEncodingException {
+    public Response createCustomer(@Context UriInfo info) throws SQLException, NamingException, NoSuchAlgorithmException, UnsupportedEncodingException {
         Gson gson = new Gson();
         Connection db = getConnection();
 

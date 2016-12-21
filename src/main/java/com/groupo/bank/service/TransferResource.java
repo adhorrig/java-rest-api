@@ -46,7 +46,7 @@ public class TransferResource {
     @POST
     @Path("/create")
     @Produces("application/json")
-    public Response mix(@Context UriInfo info) throws SQLException, NamingException {
+    public Response createTransfer(@Context UriInfo info) throws SQLException, NamingException {
 
         Gson gson = new Gson();
         

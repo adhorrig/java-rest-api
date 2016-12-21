@@ -32,7 +32,7 @@ public class BalanceResource {
     @GET
     @Path("/")
     @Produces("application/json")
-    public Response mix(@Context UriInfo info) throws SQLException, NamingException {
+    public Response getBalance(@Context UriInfo info) throws SQLException, NamingException {
 
         Gson gson = new Gson();
         Connection db = getConnection();

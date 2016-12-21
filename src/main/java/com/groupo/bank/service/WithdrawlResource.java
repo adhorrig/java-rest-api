@@ -33,7 +33,7 @@ public class WithdrawlResource {
     @POST
     @Path("/")
     @Produces("application/json")
-     public Response mix(@Context UriInfo info) throws SQLException, NamingException {
+     public Response makeWidthdrawl(@Context UriInfo info) throws SQLException, NamingException {
 
         Gson gson = new Gson();
 
