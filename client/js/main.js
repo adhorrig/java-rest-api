@@ -14,16 +14,12 @@ function get_data(method, url){
         dataType: 'text',
         type: method,
         success: function (data) {
-            console.log(data);
             $('.message-block').show("slide");
             $('.message').text(data);
         },
         error: function (xhr, status, error) {
             $('.message-block').show("slide");
-            console.log(xhr);
-            console.log(status);
-            console.log(error);
-            $('.data').text(xhr);
+            $('.message').text(data);
         }
     });
 
