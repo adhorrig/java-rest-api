@@ -37,14 +37,14 @@
 <div class="container">
 
 
+
+
+    <br>
+
     <div class="message-block">
         <div class="alert alert-success" role="alert">
             <span class="message"></span>
         </div>
-    </div>
-
-    <div id="customers">
-
     </div>
 
 
@@ -96,6 +96,7 @@
                     </div>
                 </div>
                 <button id="add-customer" class="btn-primary btn">Add</button>
+                <button class="btn btn-default" id="get-customers">View all customers</button>
             </div>
         </div>
     </section>
@@ -107,9 +108,7 @@
         container: document.querySelector('#address-input')
     });
 
-    $(document).ready(function () {
-        get_customers();
-    });
+
 </script>
 </body>
 </html>
