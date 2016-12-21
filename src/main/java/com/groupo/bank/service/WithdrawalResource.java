@@ -7,6 +7,7 @@ package com.groupo.bank.service;
 import com.google.gson.Gson;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -22,28 +23,27 @@ import javax.ws.rs.core.UriInfo;
 @Produces("application/json")
 
 public class WithdrawalResource {
-    
 
     private Connection getConnection() throws SQLException, NamingException {
         InitialContext ic = new InitialContext();
         DataSource ds = (DataSource) ic.lookup("jdbc/DSTix");
         return ds.getConnection();
     }
-    
+
     @POST
     @Path("/")
     @Produces("application/json")
-     public Response makeWidthdrawl(@Context UriInfo info) throws SQLException, NamingException {
+    public Response makeWidthdrawl(@Context UriInfo info) throws SQLException, NamingException {
 
         Gson gson = new Gson();
 
         String apiKey = info.getQueryParameters().getFirst("api_key");
         String account = info.getQueryParameters().getFirst("account");
         double amount = Double.parseDouble(info.getQueryParameters().getFirst("amount"));
-        
+
         Validator v = new Validator();
         Connection db = getConnection();
-        
+
         if (v.isValidAPI(apiKey) && v.isValidAccountNumber(account)) {
 
             if (v.hasSufficentFunds(account, amount)) {
@@ -52,6 +52,17 @@ public class WithdrawalResource {
                 st3.setDouble(1, amount);
                 st3.setString(2, account);
                 st3.executeUpdate();
+
+                PreparedStatement ps = db.prepareStatement("SELECT current_balance, customer_id FROM account WHERE account_number = ?");
+                ps.setString(1, account);
+                ResultSet s = ps.executeQuery();
+                if (s.next()) {
+                    int id = s.getInt("customer_id");
+                    double balance = s.getDouble("current_balance");
+
+                    Transaction t = new Transaction();
+                    t.addTransaction("Withdrawal", balance, id);
+                }
 
                 return Response.status(200).entity(gson.toJson(new APIResponse("200", "Withdrawl complete."))).build();
             } else {
@@ -62,11 +73,6 @@ public class WithdrawalResource {
             return Response.status(200).entity(gson.toJson(new APIResponse("200", "Invalid API."))).build();
         }
 
-
     }
-
-
-    
-    
 
 }
