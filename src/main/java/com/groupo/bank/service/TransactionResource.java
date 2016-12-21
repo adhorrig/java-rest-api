@@ -72,7 +72,7 @@ public class TransactionResource {
             st.setInt(1, id);
             ResultSet rs = st.executeQuery();
             List events = new ArrayList<>();
-            if (rs.next()) {
+            while (rs.next()) {
                 Transaction e = getFromResultSet(rs);
                 events.add(e);
 
