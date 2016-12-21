@@ -67,7 +67,7 @@ public class TransactionResource {
         String apiKey = info.getQueryParameters().getFirst("api_key");
 
         if (v.isValidAPI(apiKey)) {
-            String verifyAPI = "SELECT * FROM transactions WHERE customer_id = ?";
+            String verifyAPI = "SELECT * FROM transaction WHERE customer_id = ?";
             PreparedStatement st = db.prepareStatement(verifyAPI);
             st.setInt(1, id);
             ResultSet rs = st.executeQuery();
