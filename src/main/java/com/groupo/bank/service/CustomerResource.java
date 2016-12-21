@@ -124,91 +124,86 @@ public class CustomerResource {
         String email = java.net.URLDecoder.decode(info.getQueryParameters().getFirst("email"), "UTF-8");
         String address = java.net.URLDecoder.decode(info.getQueryParameters().getFirst("address"), "UTF-8");
         String password = java.net.URLDecoder.decode(info.getQueryParameters().getFirst("password"), "UTF-8");
+        String apiKey = java.net.URLDecoder.decode(info.getQueryParameters().getFirst("api_key"), "UTF-8");
 
-        System.out.println(name);
+        Validator v = new Validator();
 
-        String generatedPassword = null;
+        if (v.isValidAPI(apiKey)) {
 
-        // Create MessageDigest instance for MD5
-        MessageDigest md = MessageDigest.getInstance("MD5");
-        //Add password bytes to digest
-        md.update(password.getBytes());
-        //Get the hash's bytes 
-        byte[] bytes = md.digest();
-        //This bytes[] has bytes in decimal format;
-        //Convert it to hexadecimal format
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < bytes.length; i++) {
-            sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
-        }
+            String generatedPassword = null;
 
-        //Get complete hashed password in hex format
-        generatedPassword = sb.toString();
-
-        String accountType;
-        try {
-            accountType = info.getQueryParameters().getFirst("account_type");
-            if (accountType.equalsIgnoreCase("Current")) {
-                accountType = "1";
-            } else {
-                accountType = "2";
+            // Create MessageDigest instance for MD5
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            //Add password bytes to digest
+            md.update(password.getBytes());
+            //Get the hash's bytes 
+            byte[] bytes = md.digest();
+            //This bytes[] has bytes in decimal format;
+            //Convert it to hexadecimal format
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < bytes.length; i++) {
+                sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
             }
 
-        } catch (java.lang.NullPointerException e) {
-            return Response.status(200).entity(gson.toJson(new APIResponse("200", "No account type specified."))).build();
-        }
+            //Get complete hashed password in hex format
+            generatedPassword = sb.toString();
 
-        String sort = UUID.randomUUID().toString().substring(0, 8);
-        String account = UUID.randomUUID().toString().substring(0, 8);
+            String accountType;
+            try {
+                accountType = info.getQueryParameters().getFirst("account_type");
+                if (accountType.equalsIgnoreCase("Current")) {
+                    accountType = "1";
+                } else {
+                    accountType = "2";
+                }
 
-        int balance = 0;
-
-        try {
-            String insertCustomer = "INSERT INTO customer"
-                    + "(name, email, address, password) VALUES"
-                    + "(?,?,?,?)";
-
-            String createAccount = "INSERT INTO account"
-                    + "(sort_code, account_number, current_balance, account_type, customer_id) VALUES"
-                    + "(?,?,?,?,?)";
-
-            String generateAPI = "INSERT INTO api_keys"
-                    + "(api_key, customer_id) VALUES"
-                    + "(?, ?)";
-
-            PreparedStatement st = db.prepareStatement(insertCustomer, Statement.RETURN_GENERATED_KEYS);
-            st.setString(1, name);
-            st.setString(2, email);
-            st.setString(3, address);
-            st.setString(4, generatedPassword);
-            st.executeUpdate();
-
-            // get the last insert ID
-            int lastInsertId = 0;
-            ResultSet rs = st.getGeneratedKeys();
-
-            if (rs.next()) {
-                lastInsertId = rs.getInt(1);
+            } catch (java.lang.NullPointerException e) {
+                return Response.status(200).entity(gson.toJson(new APIResponse("200", "No account type specified."))).build();
             }
 
-            PreparedStatement stm = db.prepareStatement(createAccount);
-            stm.setString(1, sort);
-            stm.setString(2, account);
-            stm.setInt(3, balance);
-            stm.setString(4, accountType);
-            stm.setInt(5, lastInsertId);
-            stm.executeUpdate();
+            String sort = UUID.randomUUID().toString().substring(0, 8);
+            String account = UUID.randomUUID().toString().substring(0, 8);
 
-            // generate an API key for the new user.
-            String apiKey = UUID.randomUUID().toString();
-            PreparedStatement stm3 = db.prepareStatement(generateAPI);
-            stm3.setString(1, apiKey);
-            stm3.setInt(2, lastInsertId);
-            stm3.executeUpdate();
+            int balance = 0;
 
-            return Response.status(200).entity(gson.toJson(new APIResponse("200", "Customer created successfully."))).build();
-        } finally {
-            db.close();
+            try {
+                String insertCustomer = "INSERT INTO customer"
+                        + "(name, email, address, password) VALUES"
+                        + "(?,?,?,?)";
+
+                String createAccount = "INSERT INTO account"
+                        + "(sort_code, account_number, current_balance, account_type, customer_id) VALUES"
+                        + "(?,?,?,?,?)";
+
+                PreparedStatement st = db.prepareStatement(insertCustomer, Statement.RETURN_GENERATED_KEYS);
+                st.setString(1, name);
+                st.setString(2, email);
+                st.setString(3, address);
+                st.setString(4, generatedPassword);
+                st.executeUpdate();
+
+                // get the last insert ID
+                int lastInsertId = 0;
+                ResultSet rs = st.getGeneratedKeys();
+
+                if (rs.next()) {
+                    lastInsertId = rs.getInt(1);
+                }
+
+                PreparedStatement stm = db.prepareStatement(createAccount);
+                stm.setString(1, sort);
+                stm.setString(2, account);
+                stm.setInt(3, balance);
+                stm.setString(4, accountType);
+                stm.setInt(5, lastInsertId);
+                stm.executeUpdate();
+
+                return Response.status(200).entity(gson.toJson(new APIResponse("200", "Customer created successfully."))).build();
+            } finally {
+                db.close();
+            }
+        } else {
+            return Response.status(200).entity(gson.toJson(new APIResponse("200", "Invalid API key."))).build();
         }
 
     }

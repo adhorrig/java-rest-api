@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.7.16)
 # Database: bankapi
-# Generation Time: 2016-12-18 21:18:12 +0000
+# Generation Time: 2016-12-21 00:51:46 +0000
 # ************************************************************
 
 
@@ -70,10 +70,18 @@ DROP TABLE IF EXISTS `api_keys`;
 CREATE TABLE `api_keys` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `api_key` text NOT NULL,
-  `customer_id` int(11) unsigned NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+LOCK TABLES `api_keys` WRITE;
+/*!40000 ALTER TABLE `api_keys` DISABLE KEYS */;
+
+INSERT INTO `api_keys` (`id`, `api_key`)
+VALUES
+	(1,'3cf0e880-a782-4ce6-a63c-7ae95891051f');
+
+/*!40000 ALTER TABLE `api_keys` ENABLE KEYS */;
+UNLOCK TABLES;
 
 
 # Dump of table customer

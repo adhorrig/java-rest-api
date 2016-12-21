@@ -88,7 +88,8 @@ $("#add-customer").click(function (e) {
         email: email,
         address: address,
         password: password,
-        account_type: option
+        account_type: option,
+		api_key: key
     };
 
     get_data('POST', api + '/api/customer/create?' + jQuery.param(params));
