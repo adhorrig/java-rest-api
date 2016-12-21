@@ -26,13 +26,13 @@ function ajaxRequest(method, url){
 }
 
 
-$("#get-customers").click(function(e){
-
+$("#search-customer").click(function(e){
+    var id = $('#customer-id').val();
     var params = {
         api_key: key
     };
 
-    ajaxRequest('GET', api + '/api/customer?' + jQuery.param(params));
+    ajaxRequest('GET', api + '/api/customer/'+id+'?' + jQuery.param(params));
 
 });
 
