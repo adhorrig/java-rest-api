@@ -52,6 +52,7 @@ public class BalanceResource {
 
                 String account = rs2.getString("account_number");
                 String balance = rs2.getString("current_balance");
+                
                 return Response.status(200).entity(gson.toJson(new Balance(account, balance))).build();
 
             }

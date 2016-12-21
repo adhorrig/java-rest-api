@@ -3,6 +3,7 @@ package com.groupo.bank.service;
 import com.google.gson.Gson;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -49,7 +50,19 @@ public class LodgementResource {
             st3.setDouble(1, amount);
             st3.setString(2, account);
             st3.executeUpdate();
-            db.close();
+
+            PreparedStatement ps = db.prepareStatement("SELECT current_balance, customer_id FROM account WHERE account_number = ?");
+            ps.setString(1, account);
+            ResultSet s = ps.executeQuery();
+            if (s.next()) {
+                int id = s.getInt("customer_id");
+                double balance = s.getDouble("current_balance");
+                
+                
+                Transaction t = new Transaction();
+                t.addTransaction("Lodgement", balance, id);
+            }
+
             return Response.status(200).entity(gson.toJson(new APIResponse("200", "Lodgement complete."))).build();
 
         } else {
