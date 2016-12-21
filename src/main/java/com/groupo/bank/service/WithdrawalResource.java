@@ -60,7 +60,7 @@ public class WithdrawalResource {
                     int id = s.getInt("customer_id");
                     double balance = s.getDouble("current_balance");
 
-                    Transaction t = new Transaction();
+                    TransactionResource t = new TransactionResource();
                     t.addTransaction("Withdrawal", balance, id);
                 }
 

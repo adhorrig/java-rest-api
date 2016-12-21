@@ -13,7 +13,7 @@ import javax.sql.DataSource;
  *
  * @author anthony
  */
-public class Transaction {
+public class TransactionResource {
 
     protected Connection getConnection() throws SQLException, NamingException {
         InitialContext ic = new InitialContext();

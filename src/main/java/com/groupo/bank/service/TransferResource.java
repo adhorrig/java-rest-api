@@ -80,7 +80,7 @@ public class TransferResource {
                     double balance = s.getDouble("current_balance");
                     
                     
-                    Transaction t = new Transaction();
+                    TransactionResource t = new TransactionResource();
                     t.addTransaction("Transfer", balance, id);
                 }
                     
