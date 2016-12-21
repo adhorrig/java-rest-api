@@ -19,7 +19,7 @@ function get_data(method, url){
         },
         error: function (xhr, status, error) {
             $('.message-block').show("slide");
-            $('.message').text(data);
+            $('.message').text(error);
         }
     });
 
