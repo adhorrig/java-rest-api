@@ -23,11 +23,6 @@ import javax.ws.rs.core.UriInfo;
 
 public class WithdrawlResource {
     
-    Connection conn;
-
-    public WithdrawlResource() throws SQLException, NamingException {
-        conn = this.getConnection();
-    }
 
     private Connection getConnection() throws SQLException, NamingException {
         InitialContext ic = new InitialContext();
@@ -47,12 +42,13 @@ public class WithdrawlResource {
         double amount = Double.parseDouble(info.getQueryParameters().getFirst("amount"));
         
         Validator v = new Validator();
+        Connection db = getConnection();
         
         if (v.isValidAPI(apiKey) && v.isValidAccountNumber(account)) {
 
             if (v.hasSufficentFunds(account, amount)) {
                 String updateBalance = "UPDATE account SET current_balance = current_balance - ? WHERE account_number = ?";
-                PreparedStatement st3 = conn.prepareStatement(updateBalance);
+                PreparedStatement st3 = db.prepareStatement(updateBalance);
                 st3.setDouble(1, amount);
                 st3.setString(2, account);
                 st3.executeUpdate();

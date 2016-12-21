@@ -22,12 +22,6 @@ import javax.ws.rs.core.UriInfo;
 @Produces("application/json")
 public class LodgementResource {
 
-    Connection conn;
-
-    public LodgementResource() throws SQLException, NamingException {
-        conn = this.getConnection();
-    }
-
     protected Connection getConnection() throws SQLException, NamingException {
         InitialContext ic = new InitialContext();
         DataSource ds = (DataSource) ic.lookup("jdbc/DSTix");
@@ -40,6 +34,7 @@ public class LodgementResource {
     public Response mix(@Context UriInfo info) throws SQLException, NamingException {
 
         Gson gson = new Gson();
+        Connection db = getConnection();
 
         String apiKey = info.getQueryParameters().getFirst("api_key");
         String account = info.getQueryParameters().getFirst("account");
@@ -50,14 +45,15 @@ public class LodgementResource {
         if (v.isValidAPI(apiKey) && v.isValidAccountNumber(account)) {
 
             String updateBalance = "UPDATE account SET current_balance = current_balance + ? WHERE account_number = ?";
-            PreparedStatement st3 = conn.prepareStatement(updateBalance);
+            PreparedStatement st3 = db.prepareStatement(updateBalance);
             st3.setDouble(1, amount);
             st3.setString(2, account);
             st3.executeUpdate();
-
+            db.close();
             return Response.status(200).entity(gson.toJson(new APIResponse("200", "Lodgement complete."))).build();
 
         } else {
+            db.close();
             return Response.status(200).entity(gson.toJson(new APIResponse("200", "Invalid API."))).build();
         }
 

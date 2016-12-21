@@ -56,10 +56,11 @@ public class BalanceResource {
 
             }
         } else {
+            db.close();
             return Response.status(200).entity(gson.toJson(new APIResponse("200", "Invalid API key."))).build();
         }
         
-        
+        db.close();
         return Response.status(200).entity(gson.toJson(new APIResponse("200", "Invalid account number."))).build();
 
     }

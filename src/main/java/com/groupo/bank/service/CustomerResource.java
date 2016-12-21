@@ -33,12 +33,6 @@ import javax.ws.rs.core.UriInfo;
 @Produces("application/json")
 public class CustomerResource {
 
-    Connection conn;
-
-    public CustomerResource() throws SQLException, NamingException {
-        conn = this.getConnection();
-    }
-
     protected Connection getConnection() throws SQLException, NamingException {
         InitialContext ic = new InitialContext();
         DataSource ds = (DataSource) ic.lookup("jdbc/DSTix");
@@ -60,12 +54,13 @@ public class CustomerResource {
 
         Gson gson = new Gson();
         Validator v = new Validator();
+        Connection db = getConnection();
 
         String apiKey = info.getQueryParameters().getFirst("api_key");
 
         if (v.isValidAPI(apiKey)) {
             String verifyAPI = "SELECT * FROM customer WHERE customer_id = ?";
-            PreparedStatement st = this.conn.prepareStatement(verifyAPI);
+            PreparedStatement st = db.prepareStatement(verifyAPI);
             st.setInt(1, id);
             ResultSet rs = st.executeQuery();
             List events = new ArrayList<>();
@@ -74,7 +69,7 @@ public class CustomerResource {
                 events.add(e);
 
             }
-
+            db.close();
             return Response.status(200).entity(gson.toJson(events)).build();
 
         }

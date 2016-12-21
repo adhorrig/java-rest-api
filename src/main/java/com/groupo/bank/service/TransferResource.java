@@ -24,11 +24,6 @@ import javax.ws.rs.core.UriInfo;
 @Produces("application/json")
 public class TransferResource {
 
-    Connection conn;
-
-    public TransferResource() throws SQLException, NamingException {
-        conn = this.getConnection();
-    }
 
     protected Connection getConnection() throws SQLException, NamingException {
         InitialContext ic = new InitialContext();
@@ -36,9 +31,10 @@ public class TransferResource {
         return ds.getConnection();
     }
 
-    private boolean addTransaction(String description, Double balance, int id) throws SQLException {
+    private boolean addTransaction(String description, Double balance, int id) throws SQLException, NamingException {
         String t = "INSERT INTO transaction (description, post_balance, customer_id) VALUES (?,?,?);";
-        PreparedStatement s = conn.prepareStatement(t, Statement.RETURN_GENERATED_KEYS);
+        Connection db = getConnection();
+        PreparedStatement s = db.prepareStatement(t, Statement.RETURN_GENERATED_KEYS);
         s.setString(1, description);
         s.setDouble(2, balance);
         s.setInt(3, id);
@@ -53,30 +49,30 @@ public class TransferResource {
     public Response mix(@Context UriInfo info) throws SQLException, NamingException {
 
         Gson gson = new Gson();
-
+        
         String apiKey = info.getQueryParameters().getFirst("api_key");
         String from = info.getQueryParameters().getFirst("from");
         String to = info.getQueryParameters().getFirst("to");
         double amount = Double.parseDouble(info.getQueryParameters().getFirst("amount"));
         Validator v = new Validator();
-
+        Connection db = getConnection();
         if (v.isValidAPI(apiKey) && v.isValidAccountNumber(from) && v.isValidAccountNumber(to)) {
 
             if (v.hasSufficentFunds(from, amount)) {
                 String updateBalance = "UPDATE account SET current_balance = current_balance + ? WHERE account_number = ?";
-                PreparedStatement st3 = conn.prepareStatement(updateBalance);
+                PreparedStatement st3 = db.prepareStatement(updateBalance);
                 st3.setDouble(1, amount);
                 st3.setString(2, to);
                 st3.executeUpdate();
 
                 String updateSenderBalance = "UPDATE account SET current_balance = current_balance - ? WHERE account_number = ?";
-                PreparedStatement st4 = conn.prepareStatement(updateSenderBalance);
+                PreparedStatement st4 = db.prepareStatement(updateSenderBalance);
                 st4.setDouble(1, amount);
                 st4.setString(2, from);
                 st4.executeUpdate();
 
                 // update transaction
-                PreparedStatement ps = conn.prepareStatement("SELECT * FROM account WHERE account_number = ?");
+                PreparedStatement ps = db.prepareStatement("SELECT * FROM account WHERE account_number = ?");
                 ps.setString(1, from);
                 ResultSet s = ps.executeQuery();
                 if (s.next()) {
@@ -88,6 +84,7 @@ public class TransferResource {
 
                 return Response.status(200).entity(gson.toJson(new APIResponse("200", "Transfer successful."))).build();
             } else {
+
                 return Response.status(200).entity(gson.toJson(new APIResponse("200", "The sender has insufficient funds to make this transfer."))).build();
             }
 

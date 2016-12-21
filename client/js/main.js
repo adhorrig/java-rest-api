@@ -9,6 +9,7 @@ var key = '3cf0e880-a782-4ce6-a63c-7ae95891051f';
 function get_data(method, url){
     console.log(url);
     console.log(method);
+    $('.message-block').hide("slide");
     $.ajax({
         url: url,
         dataType: 'text',

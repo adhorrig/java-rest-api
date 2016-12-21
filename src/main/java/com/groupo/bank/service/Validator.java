@@ -14,11 +14,6 @@ import javax.sql.DataSource;
  */
 public class Validator {
 
-    Connection conn;
-
-    public Validator() throws SQLException, NamingException {
-        conn = this.getConnection();
-    }
 
     private Connection getConnection() throws SQLException, NamingException {
         InitialContext ic = new InitialContext();
@@ -28,7 +23,8 @@ public class Validator {
 
     public boolean isValidAPI(String api) throws SQLException, NamingException {
         String verifyAPI = "SELECT * FROM api_keys WHERE api_key = ?";
-        PreparedStatement st = conn.prepareStatement(verifyAPI);
+        Connection db = getConnection();
+        PreparedStatement st = db.prepareStatement(verifyAPI);
         st.setString(1, api);
         ResultSet rs = st.executeQuery();
         return rs.next();
@@ -37,7 +33,8 @@ public class Validator {
     public boolean isValidAccountNumber(String accountNumber) throws SQLException, NamingException {
         String verifyAccount = "SELECT * FROM account WHERE account_number = ?";
         PreparedStatement st;
-        st = conn.prepareStatement(verifyAccount);
+        Connection db = getConnection();
+        st = db.prepareStatement(verifyAccount);
         st.setString(1, accountNumber);
         ResultSet rs2 = st.executeQuery();
         return rs2.next();
@@ -46,7 +43,8 @@ public class Validator {
 
     public boolean hasSufficentFunds(String accountNumber, double amount) throws SQLException, NamingException {
         String verifyAccount = "SELECT account_number, current_balance FROM account WHERE account_number = ?";
-        PreparedStatement st2 = conn.prepareStatement(verifyAccount);
+        Connection db = getConnection();
+        PreparedStatement st2 = db.prepareStatement(verifyAccount);
         st2.setString(1, accountNumber);
         ResultSet rs2 = st2.executeQuery();
 
