@@ -5,9 +5,9 @@
 # http://www.sequelpro.com/
 # https://github.com/sequelpro/sequelpro
 #
-# Host: 127.0.0.1 (MySQL 5.7.15)
+# Host: 127.0.0.1 (MySQL 5.7.16)
 # Database: bankapi
-# Generation Time: 2016-12-21 23:57:58 +0000
+# Generation Time: 2016-12-22 16:34:46 +0000
 # ************************************************************
 
 
@@ -51,7 +51,8 @@ VALUES
 	(6,5,'01169f49','1a564364',0.0000,2,1),
 	(7,6,'be96fd12','6059a948',0.0000,2,1),
 	(8,7,'c17107b8','c8cac12a',0.0000,2,1),
-	(9,7,'734e9c51','6f569a37',0.0000,1,1);
+	(9,7,'734e9c51','6f569a37',0.0000,1,1),
+	(10,8,'87b3757b','6dddbda7',0.0000,1,1);
 
 /*!40000 ALTER TABLE `account` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -109,25 +110,27 @@ DROP TABLE IF EXISTS `customer`;
 
 CREATE TABLE `customer` (
   `customer_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(120) DEFAULT NULL,
-  `email` varchar(120) DEFAULT NULL,
-  `address` varchar(256) DEFAULT NULL,
-  `password` varchar(256) DEFAULT NULL,
+  `name` varchar(120) NOT NULL DEFAULT '',
+  `email` varchar(120) NOT NULL DEFAULT '',
+  `address` varchar(256) NOT NULL DEFAULT '',
+  `password` varchar(256) NOT NULL DEFAULT '',
+  `salt` varchar(256) DEFAULT '',
   PRIMARY KEY (`customer_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 LOCK TABLES `customer` WRITE;
 /*!40000 ALTER TABLE `customer` DISABLE KEYS */;
 
-INSERT INTO `customer` (`customer_id`, `name`, `email`, `address`, `password`)
+INSERT INTO `customer` (`customer_id`, `name`, `email`, `address`, `password`, `salt`)
 VALUES
-	(1,'Adam','adhorrig@gmail.com','87 The Way, Hunter\'s Run, Clonsilla, Leinster, Ireland','0945fc9611f55fd0e183fb8b044f1afe'),
-	(2,'Oliwia','oliwia.grunwald@wp.pl','Gdańsk, Poland','0945fc9611f55fd0e183fb8b044f1afe'),
-	(3,'Some','Other@User.com','Gdańsk, Poland','0945fc9611f55fd0e183fb8b044f1afe'),
-	(4,'Blah','Data','Gdansk, Poland','d41d8cd98f00b204e9800998ecf8427e'),
-	(5,'test1','test1@gmail.com','Gdańsk, Poland','0945fc9611f55fd0e183fb8b044f1afe'),
-	(6,'test2','test2@gmail.com','Gdańsk, Poland','0945fc9611f55fd0e183fb8b044f1afe'),
-	(7,'test3','test3@gmail.com','Gdańsk, Poland','0945fc9611f55fd0e183fb8b044f1afe');
+	(1,'Adam','adhorrig@gmail.com','87 The Way, Hunter\'s Run, Clonsilla, Leinster, Ireland','0945fc9611f55fd0e183fb8b044f1afe',NULL),
+	(2,'Oliwia','oliwia.grunwald@wp.pl','Gdańsk, Poland','0945fc9611f55fd0e183fb8b044f1afe',NULL),
+	(3,'Some','Other@User.com','Gdańsk, Poland','0945fc9611f55fd0e183fb8b044f1afe',NULL),
+	(4,'Blah','Data','Gdansk, Poland','d41d8cd98f00b204e9800998ecf8427e',NULL),
+	(5,'test1','test1@gmail.com','Gdańsk, Poland','0945fc9611f55fd0e183fb8b044f1afe',NULL),
+	(6,'test2','test2@gmail.com','Gdańsk, Poland','0945fc9611f55fd0e183fb8b044f1afe',NULL),
+	(7,'test3','test3@gmail.com','Gdańsk, Poland','0945fc9611f55fd0e183fb8b044f1afe',NULL),
+	(8,'a','a','Abidjan, Ivory Coast','e��3T�@ӝ�.�\"o{�a','�����!�E');
 
 /*!40000 ALTER TABLE `customer` ENABLE KEYS */;
 UNLOCK TABLES;
