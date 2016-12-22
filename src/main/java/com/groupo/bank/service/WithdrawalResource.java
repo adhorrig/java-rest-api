@@ -73,10 +73,10 @@ public class WithdrawalResource {
 
                         return Response.status(200).entity(gson.toJson(new APIResponse("200", "Withdrawl complete."))).build();
                     } else {
-                        return Response.status(200).entity(gson.toJson(new APIResponse("200", "The sender has insufficient funds to make this transfer."))).build();
+                        return Response.status(200).entity(gson.toJson(new APIResponse("500", "Insufficient funds for this withdrawal."))).build();
                     }
                 } else {
-                    return Response.status(200).entity(gson.toJson(new APIResponse("Error", "Cant withdraw from a removed account."))).build();
+                    return Response.status(200).entity(gson.toJson(new APIResponse("405", "Cant withdraw from a removed account."))).build();
                 }
 
             } else {

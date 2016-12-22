@@ -17,8 +17,8 @@ import javax.ws.rs.core.UriInfo;
 
 /**
  *
- * @author anthony
- * @author adam
+ * @author anthonybloomer
+ * @author adamhorrigan
  */
 @Path("/lodgement")
 @Produces("application/json")
@@ -74,12 +74,12 @@ public class LodgementResource {
                    return Response.status(200).entity(gson.toJson(new APIResponse("200", "Lodgement complete."))).build();
 
                } else {
-                    return Response.status(200).entity(gson.toJson(new APIResponse("Error", "This account has been removed and therefore cannot be lodged to."))).build();
+                    return Response.status(200).entity(gson.toJson(new APIResponse("405c", "This account has been removed and therefore cannot be lodged to."))).build();
                 }
             }
              else {
             db.close();
-            return Response.status(200).entity(gson.toJson(new APIResponse("200", "Invalid API."))).build();
+            return Response.status(200).entity(gson.toJson(new APIResponse("500", "Invalid API."))).build();
         }
 
     }

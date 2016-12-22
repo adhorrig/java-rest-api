@@ -80,10 +80,10 @@ public class TransactionResource {
             }
             db.close();
             
-            if(events.size() > 1){
+            if(!events.isEmpty()){
                 return Response.status(200).entity(gson.toJson(events)).build();
             } else {
-                return Response.status(200).entity(gson.toJson("Invalid ID. No acount matching.")).build();
+                return Response.status(200).entity(gson.toJson(new APIResponse("405", "No account matching."))).build();
             }
             
 

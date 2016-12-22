@@ -79,7 +79,7 @@ public class CustomerResource {
                     db.close();
                     return Response.status(200).entity(gson.toJson(events)).build();
                 } else {
-                    return Response.status(200).entity(gson.toJson("This account has been removed.")).build();
+                    return Response.status(200).entity(gson.toJson(new APIResponse("Error", "The account has been removed"))).build();
                 }
             }
 
@@ -316,7 +316,7 @@ public class CustomerResource {
                 db.close();
             }
         } else {
-            return Response.status(200).entity(gson.toJson(new APIResponse("200", "Invalid API key."))).build();
+            return Response.status(200).entity(gson.toJson(new APIResponse("500", "Invalid API key."))).build();
         }
 
     }
@@ -338,12 +338,11 @@ public class CustomerResource {
             st.setInt(1, id);
             st.executeUpdate();
             db.close();
-            return Response.status(200).entity(gson.toJson("Account has been removed.")).build();
+            return Response.status(200).entity(gson.toJson(new APIResponse("200", "Account has been removed"))).build();
 
+        } else {
+            return Response.status(200).entity(gson.toJson(new APIResponse("500", "Invalid API key."))).build();
         }
-
-        return null;
-
     }
 
 }

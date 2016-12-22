@@ -92,16 +92,16 @@ public class TransferResource {
                             return Response.status(200).entity(gson.toJson(new APIResponse("200", "Transfer successful."))).build();
                         } else {
 
-                            return Response.status(200).entity(gson.toJson(new APIResponse("200", "The sender has insufficient funds to make this transfer."))).build();
+                            return Response.status(200).entity(gson.toJson(new APIResponse("500", "The sender has insufficient funds to make this transfer."))).build();
                         }
                     } else {
-                        return Response.status(200).entity(gson.toJson(new APIResponse("Error", "Cant send money from a removed account."))).build();
+                        return Response.status(200).entity(gson.toJson(new APIResponse("405", "Cant send money from a removed account."))).build();
 
                     }
                 }
 
             } else {
-                return Response.status(200).entity(gson.toJson(new APIResponse("200", "Invalid API."))).build();
+                return Response.status(200).entity(gson.toJson(new APIResponse("500", "Invalid API."))).build();
             }
 
         }
