@@ -9,6 +9,7 @@ import com.google.gson.Gson;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -233,7 +234,7 @@ public class CustomerResource {
     @POST
     @Path("/create")
     @Produces("application/json")
-    public Response createCustomer(@Context UriInfo info) throws SQLException, NamingException, NoSuchAlgorithmException, UnsupportedEncodingException {
+    public Response createCustomer(@Context UriInfo info) throws SQLException, NamingException, NoSuchAlgorithmException, UnsupportedEncodingException, InvalidKeySpecException {
         Gson gson = new Gson();
         Connection db = getConnection();
 
@@ -251,23 +252,15 @@ public class CustomerResource {
 
         if (v.isValidAPI(apiKey)) {
 
-            String generatedPassword = null;
-
-            // Create MessageDigest instance for MD5
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            //Add password bytes to digest
-            md.update(password.getBytes());
-            //Get the hash's bytes 
-            byte[] bytes = md.digest();
-            //This bytes[] has bytes in decimal format;
-            //Convert it to hexadecimal format
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < bytes.length; i++) {
-                sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
-            }
-
-            //Get complete hashed password in hex format
-            generatedPassword = sb.toString();
+            String generatedPassword;
+     
+            PasswordEncryptionService pes = new PasswordEncryptionService();
+        
+            byte[] salt = pes.generateSalt();
+            byte[] securePassword = pes.getEncryptedPassword(password, salt);
+        
+            generatedPassword = new String(securePassword);
+            String saltString = new String(salt);
 
             String accountType;
             try {
@@ -289,8 +282,8 @@ public class CustomerResource {
 
             try {
                 String insertCustomer = "INSERT INTO customer"
-                        + "(name, email, address, password) VALUES"
-                        + "(?,?,?,?)";
+                        + "(name, email, address, password, salt) VALUES"
+                        + "(?,?,?,?,?)";
 
                 String createAccount = "INSERT INTO account"
                         + "(sort_code, account_number, current_balance, account_type, customer_id) VALUES"
@@ -301,6 +294,7 @@ public class CustomerResource {
                 st.setString(2, email);
                 st.setString(3, address);
                 st.setString(4, generatedPassword);
+                st.setString(5, saltString);
                 st.executeUpdate();
 
                 // get the last insert ID
