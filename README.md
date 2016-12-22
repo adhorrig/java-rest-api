@@ -109,3 +109,22 @@ A RESTful API written using Java as part of the Web Services and API development
 - Resource contents: A success message is returned ```{"status":"200","message":"Transfer successful."}```. Otherwise there will be an error if the account has been removed ```{"status":"405","message":"Can't withdraw from a removed account."}```. Also if there is insufficient funds an error will be returned ```{"status":"500","message":"Insufficient funds for this withdrawal."}````
 - Pre-Conditions: The account must have a ```status``` of 1 meaning it has not already been delete and the account must have sufficient funds for the transaction.
 - Post-Conditions: The ```balance``` of the account with money being sent to will be credited while the account sending money will be debited.
+
+## Example of a transfer
+
+**Note**: This is a JavaScript example.
+
+    $("#transfer").click(function (e) {
+        var from = account_number_here;
+        var to = account_number_here;
+        var amount = value_of_money_to_send_here;
+
+        var params = {
+            from: from,
+            to: to,
+            amount: amount,
+            api_key: key
+        };
+
+        ajaxRequest('POST', api + '/api/transfer/create?' + jQuery.param(params));
+    });
