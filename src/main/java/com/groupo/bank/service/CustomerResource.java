@@ -120,8 +120,8 @@ public class CustomerResource {
         String apiKey = info.getQueryParameters().getFirst("api_key");
         String account = info.getQueryParameters().getFirst("account");
         String accountType;
-        
-        if (!(v.isValidAPI(apiKey))){
+
+        if (!(v.isValidAPI(apiKey))) {
             return Response.status(200).entity(gson.toJson(new APIResponse("200", "Invalid API."))).build();
         }
 
@@ -214,7 +214,7 @@ public class CustomerResource {
             Connection db = getConnection();
 
             try {
-                PreparedStatement st = db.prepareStatement("SELECT customer_id, email, name from customer");
+                PreparedStatement st = db.prepareStatement("SELECT customer.customer_id, customer.email, customer.name, account.customer_id, account.status FROM customer INNER JOIN account ON customer.customer_id = account.customer_id WHERE status = 1");
                 ResultSet rs = st.executeQuery();
                 while (rs.next()) {
                     Customer e = getFromResultSet(rs);
@@ -339,18 +339,31 @@ public class CustomerResource {
         Connection db = getConnection();
 
         String apiKey = info.getQueryParameters().getFirst("api_key");
-        
+
         if (v.isValidAPI(apiKey)) {
-            String deleteCustomer = "UPDATE account SET status = 0 WHERE customer_id = ?";
-            PreparedStatement st = db.prepareStatement(deleteCustomer);
-            st.setInt(1, id);
-            st.executeUpdate();
-            db.close();
-            return Response.status(200).entity(gson.toJson(new APIResponse("200", "Account has been removed"))).build();
+            PreparedStatement p = db.prepareStatement("SELECT status from account where customer_id = ?");
+            p.setInt(1, id);
+            ResultSet rs = p.executeQuery();
+
+            if (rs.next()) {
+                int status = rs.getInt("status");
+                if (status == 1) {
+
+                    String deleteCustomer = "UPDATE account SET status = 0 WHERE customer_id = ?";
+                    PreparedStatement st = db.prepareStatement(deleteCustomer);
+                    st.setInt(1, id);
+                    st.executeUpdate();
+                    db.close();
+                    return Response.status(200).entity(gson.toJson(new APIResponse("200", "Account has been removed"))).build();
+
+                } else {
+                    return Response.status(200).entity(gson.toJson(new APIResponse("500", "This account has already been removed."))).build();
+                }
+            }
 
         } else {
-            return Response.status(200).entity(gson.toJson(new APIResponse("500", "Invalid API key."))).build();
+            return Response.status(200).entity(gson.toJson(new APIResponse("500", "Invalid API Key."))).build();
         }
+        return null;
     }
-
 }
