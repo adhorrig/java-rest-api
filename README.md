@@ -114,17 +114,19 @@ A RESTful API written using Java as part of the Web Services and API development
 
 **Note**: This is a JavaScript example.
 
-    $("#transfer").click(function (e) {
-        var from = account_number_here;
-        var to = account_number_here;
-        var amount = value_of_money_to_send_here;
+```javascript
+$("#transfer").click(function (e) {
+    var from = account_number_here;
+    var to = account_number_here;
+    var amount = value_of_money_to_send_here;
 
-        var params = {
-            from: from,
-            to: to,
-            amount: amount,
-            api_key: key
-        };
+    var params = {
+        from: from,
+        to: to,
+        amount: amount,
+        api_key: key
+    };
 
-        ajaxRequest('POST', api + '/api/transfer/create?' + jQuery.param(params));
-    });
+    ajaxRequest('POST', api + '/api/transfer/create?' + jQuery.param(params));
+});
+```
