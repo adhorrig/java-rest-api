@@ -59,18 +59,29 @@ public class CustomerResource {
         String apiKey = info.getQueryParameters().getFirst("api_key");
 
         if (v.isValidAPI(apiKey)) {
-            String verifyAPI = "SELECT * FROM customer WHERE customer_id = ?";
-            PreparedStatement st = db.prepareStatement(verifyAPI);
-            st.setInt(1, id);
-            ResultSet rs = st.executeQuery();
-            List events = new ArrayList<>();
-            if (rs.next()) {
-                Customer e = getFromResultSet(rs);
-                events.add(e);
+            PreparedStatement p = db.prepareStatement("SELECT status from account where customer_id = ?");
+            p.setInt(1, id);
+            ResultSet s = p.executeQuery();
 
+            if (s.next()) {
+                int status = s.getInt("status");
+                if (status == 1) {
+                    String verifyAPI = "SELECT * FROM customer WHERE customer_id = ?";
+                    PreparedStatement st = db.prepareStatement(verifyAPI);
+                    st.setInt(1, id);
+                    ResultSet rs = st.executeQuery();
+                    List events = new ArrayList<>();
+                    if (rs.next()) {
+                        Customer e = getFromResultSet(rs);
+                        events.add(e);
+
+                    }
+                    db.close();
+                    return Response.status(200).entity(gson.toJson(events)).build();
+                } else {
+                    return Response.status(200).entity(gson.toJson("This account has been removed.")).build();
+                }
             }
-            db.close();
-            return Response.status(200).entity(gson.toJson(events)).build();
 
         }
 
@@ -309,7 +320,7 @@ public class CustomerResource {
         }
 
     }
-    
+
     @GET
     @Path("delete/{id}")
     @Produces("application/json")
@@ -334,5 +345,5 @@ public class CustomerResource {
         return null;
 
     }
-    
+
 }
