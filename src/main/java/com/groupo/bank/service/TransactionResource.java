@@ -21,7 +21,8 @@ import javax.ws.rs.core.UriInfo;
 
 /**
  *
- * @author anthony
+ * @author anthonybloomer
+ * @author adamhorrigan
  */
 
 @Path("/transaction")

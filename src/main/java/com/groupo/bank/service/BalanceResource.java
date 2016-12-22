@@ -2,7 +2,8 @@ package com.groupo.bank.service;
 
 /**
  *
- * @author anthony
+ * @author anthonybloomer
+ * @author adamhorrigan
  */
 import com.google.gson.Gson;
 import java.sql.Connection;

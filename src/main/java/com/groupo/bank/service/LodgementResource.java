@@ -18,6 +18,7 @@ import javax.ws.rs.core.UriInfo;
 /**
  *
  * @author anthony
+ * @author adam
  */
 @Path("/lodgement")
 @Produces("application/json")

@@ -1,5 +1,7 @@
 /**
- * Created by anthony on 20/12/2016.
+ *
+ * author anthonybloomer
+ * author adamhorrigan
  */
 
 var api = 'http://0.0.0.0:8080';
