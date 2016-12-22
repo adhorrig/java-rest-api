@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.7.15)
 # Database: bankapi
-# Generation Time: 2016-12-21 23:05:07 +0000
+# Generation Time: 2016-12-21 23:57:58 +0000
 # ************************************************************
 
 
@@ -38,6 +38,23 @@ CREATE TABLE `account` (
   CONSTRAINT `account_ibfk_1` FOREIGN KEY (`account_type`) REFERENCES `account_types` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+LOCK TABLES `account` WRITE;
+/*!40000 ALTER TABLE `account` DISABLE KEYS */;
+
+INSERT INTO `account` (`id`, `customer_id`, `sort_code`, `account_number`, `current_balance`, `account_type`, `status`)
+VALUES
+	(1,1,'6caf3cbd','b787e46f',100.0000,1,0),
+	(2,2,'848c0b27','905874d9',9600.0000,2,0),
+	(3,3,'fc0b89da','aaba4139',0.0000,1,0),
+	(4,4,'98a1fdb2','f33980f5',0.0000,2,1),
+	(5,5,'4727fdcd','61080f76',0.0000,1,1),
+	(6,5,'01169f49','1a564364',0.0000,2,1),
+	(7,6,'be96fd12','6059a948',0.0000,2,1),
+	(8,7,'c17107b8','c8cac12a',0.0000,2,1),
+	(9,7,'734e9c51','6f569a37',0.0000,1,1);
+
+/*!40000 ALTER TABLE `account` ENABLE KEYS */;
+UNLOCK TABLES;
 
 
 # Dump of table account_types
@@ -51,6 +68,16 @@ CREATE TABLE `account_types` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+LOCK TABLES `account_types` WRITE;
+/*!40000 ALTER TABLE `account_types` DISABLE KEYS */;
+
+INSERT INTO `account_types` (`id`, `account_type`)
+VALUES
+	(1,'Current'),
+	(2,'Savings');
+
+/*!40000 ALTER TABLE `account_types` ENABLE KEYS */;
+UNLOCK TABLES;
 
 
 # Dump of table api_keys
@@ -64,6 +91,15 @@ CREATE TABLE `api_keys` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+LOCK TABLES `api_keys` WRITE;
+/*!40000 ALTER TABLE `api_keys` DISABLE KEYS */;
+
+INSERT INTO `api_keys` (`id`, `api_key`)
+VALUES
+	(1,'3cf0e880-a782-4ce6-a63c-7ae95891051f');
+
+/*!40000 ALTER TABLE `api_keys` ENABLE KEYS */;
+UNLOCK TABLES;
 
 
 # Dump of table customer
@@ -80,6 +116,21 @@ CREATE TABLE `customer` (
   PRIMARY KEY (`customer_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+LOCK TABLES `customer` WRITE;
+/*!40000 ALTER TABLE `customer` DISABLE KEYS */;
+
+INSERT INTO `customer` (`customer_id`, `name`, `email`, `address`, `password`)
+VALUES
+	(1,'Adam','adhorrig@gmail.com','87 The Way, Hunter\'s Run, Clonsilla, Leinster, Ireland','0945fc9611f55fd0e183fb8b044f1afe'),
+	(2,'Oliwia','oliwia.grunwald@wp.pl','Gdańsk, Poland','0945fc9611f55fd0e183fb8b044f1afe'),
+	(3,'Some','Other@User.com','Gdańsk, Poland','0945fc9611f55fd0e183fb8b044f1afe'),
+	(4,'Blah','Data','Gdansk, Poland','d41d8cd98f00b204e9800998ecf8427e'),
+	(5,'test1','test1@gmail.com','Gdańsk, Poland','0945fc9611f55fd0e183fb8b044f1afe'),
+	(6,'test2','test2@gmail.com','Gdańsk, Poland','0945fc9611f55fd0e183fb8b044f1afe'),
+	(7,'test3','test3@gmail.com','Gdańsk, Poland','0945fc9611f55fd0e183fb8b044f1afe');
+
+/*!40000 ALTER TABLE `customer` ENABLE KEYS */;
+UNLOCK TABLES;
 
 
 # Dump of table transaction
@@ -98,6 +149,19 @@ CREATE TABLE `transaction` (
   KEY `account_number` (`date`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+LOCK TABLES `transaction` WRITE;
+/*!40000 ALTER TABLE `transaction` DISABLE KEYS */;
+
+INSERT INTO `transaction` (`transaction_id`, `date`, `description`, `post_balance`, `customer_id`)
+VALUES
+	(1,'2016-12-21 14:26:13','Transfer',5.0000,1),
+	(2,'2016-12-21 15:29:34','Transfer',0.0000,1),
+	(3,'2016-12-21 18:03:10','Withdrawal',9600.0000,2),
+	(4,'2016-12-21 21:58:22','Lodgement',50.0000,1),
+	(5,'2016-12-21 22:05:55','Lodgement',100.0000,1);
+
+/*!40000 ALTER TABLE `transaction` ENABLE KEYS */;
+UNLOCK TABLES;
 
 
 
