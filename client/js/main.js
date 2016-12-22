@@ -27,6 +27,16 @@ function ajaxRequest(method, url){
     });
 }
 
+$("#get-customers").click(function(e){
+
+    var params = {
+        api_key: key
+    };
+
+    ajaxRequest('GET', api + '/api/customer?' + jQuery.param(params));
+
+});
+
 $("#add-account-type").click(function (e) {
     var account = $('#account-number').val();
     var option = $("#new-account-select").val();
