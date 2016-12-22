@@ -68,7 +68,13 @@ public class TransactionResource {
         String apiKey = info.getQueryParameters().getFirst("api_key");
 
         if (v.isValidAPI(apiKey)) {
-            String getTransactions = "SELECT transaction.customer_id, transaction.description, transaction.post_balance, account.status FROM transaction INNER JOIN account ON transaction.customer_id = account.customer_id WHERE status = 1 and transaction.customer_id = ?";
+            String getTransactions = ""
+                    + "SELECT transaction.customer_id, transaction.description, transaction.post_balance, account.status "
+                    + "FROM transaction "
+                    + "INNER JOIN account "
+                    + "ON transaction.customer_id = account.customer_id "
+                    + "WHERE status = 1 "
+                    + "AND transaction.customer_id = ?";
             PreparedStatement st = db.prepareStatement(getTransactions);
             st.setInt(1, id);
             ResultSet rs = st.executeQuery();
@@ -89,7 +95,7 @@ public class TransactionResource {
 
         }
 
-        return null;
+        return Response.status(200).entity(gson.toJson("Invalid API key.")).build();
 
     }
     
