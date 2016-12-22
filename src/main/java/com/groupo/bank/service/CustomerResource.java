@@ -120,6 +120,10 @@ public class CustomerResource {
         String apiKey = info.getQueryParameters().getFirst("api_key");
         String account = info.getQueryParameters().getFirst("account");
         String accountType;
+        
+        if (!(v.isValidAPI(apiKey))){
+            return Response.status(200).entity(gson.toJson(new APIResponse("200", "Invalid API."))).build();
+        }
 
         try {
             accountType = info.getQueryParameters().getFirst("account_type");
@@ -239,6 +243,10 @@ public class CustomerResource {
         String password = java.net.URLDecoder.decode(info.getQueryParameters().getFirst("password"), "UTF-8");
         String apiKey = java.net.URLDecoder.decode(info.getQueryParameters().getFirst("api_key"), "UTF-8");
 
+        if (name.equals("") || email.equals("") || address.equals("") || password.equals("")) {
+            return Response.status(200).entity(gson.toJson(new APIResponse("200", "Form fields can not be empty."))).build();
+        }
+
         Validator v = new Validator();
 
         if (v.isValidAPI(apiKey)) {
@@ -331,7 +339,7 @@ public class CustomerResource {
         Connection db = getConnection();
 
         String apiKey = info.getQueryParameters().getFirst("api_key");
-
+        
         if (v.isValidAPI(apiKey)) {
             String deleteCustomer = "UPDATE account SET status = 0 WHERE customer_id = ?";
             PreparedStatement st = db.prepareStatement(deleteCustomer);
