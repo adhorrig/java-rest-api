@@ -9,7 +9,7 @@ A RESTful API written using Java as part of the Web Services and API development
 - Build and run the web server in Netbeans.
 - Open the client in **/client** to test the client responses.
 
-**Note**: Tested in Safari. Issues in Chrome due to Cross-Domain requests are not allowed.
+**Note**: Tested in Safari. Issues in Chrome due to Cross-Domain requests are not allowed. Also sometimes the server locks after multiple requests. Clean build + restart is required.
 
 ## API Entry-Points
 
