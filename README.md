@@ -1,15 +1,13 @@
 # java-rest-api
 A RESTful API written using Java as part of the Web Services and API development module (Group O) at NCI.
 
-
-
 ## Setup
 
 - Create a database called **bank_api** and import the schema from **/sql/schema**.
 - Build and run the web server in Netbeans.
 - Open the client in **/client** to test the client responses.
 
-**Note**: Tested in Safari. Issues in Chrome due to Cross-Domain requests are not allowed. Also sometimes the server locks after multiple requests. Clean build + restart is required.
+**Note**: Tested in Safari. Issues in Chrome due to Cross-Domain requests not being allowed. Also sometimes the server locks after multiple requests. Clean build + restart is required.
 
 ## API Entry-Points
 
@@ -110,7 +108,7 @@ A RESTful API written using Java as part of the Web Services and API development
 - Pre-Conditions: The account must have a ```status``` of 1 meaning it has not already been delete and the account must have sufficient funds for the transaction.
 - Post-Conditions: The ```balance``` of the account with money being sent to will be credited while the account sending money will be debited.
 
-## Example of a transfer
+## API Request Example
 
 **Note**: This is a JavaScript example.
 
